@@ -1,0 +1,124 @@
+{
+  "landing": {
+    "nav": {
+      "github": "GitHub",
+      "login": "Anmelden",
+      "signup": "Registrieren"
+    },
+    "hero": {
+      "title": "Die Citation Map, die in deiner Zotero-Bibliothek lebt.",
+      "tagline": "OrbLit synchronisiert direkt mit Zotero, findet thematische Cluster in deiner Literatur und deckt verwandte Paper auf, die deine Zitationen allein nie zeigen würden. Kostenlos und Open Source.",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "Auf GitHub ansehen"
+    },
+    "features": {
+      "title": "Alles kreist um das Paper, das du gerade liest",
+      "search": {
+        "title": "OpenAlex durchsuchen",
+        "body": "Finde jedes Paper im gesamten OpenAlex-Katalog und hol es direkt auf deine Karte."
+      },
+      "map": {
+        "title": "Das Netzwerk visualisieren",
+        "body": "Zitationen und Referenzen werden zu einem erkundbaren Wissensnetzwerk - ziehen, erweitern und zoomen, um Verbindungen zu sehen."
+      },
+      "zotero": {
+        "title": "Mit Zotero synchronisieren",
+        "body": "Bibliothek einmal verbinden, danach mit einem Klick synchron halten - neue Paper, DOI-Abgleiche und Ergänzungen werden übernommen."
+      },
+      "tags": {
+        "title": "Taggen & organisieren",
+        "body": "Paper nach Thema farblich markieren, Entdeckungen von deiner Sammlung unterscheiden und nie den Faden verlieren."
+      }
+    },
+    "showcase": {
+      "sectionTitle": "So sieht's in Aktion aus",
+      "map": {
+        "title": "Zitationsnetzwerk visualisieren",
+        "body": "Zitationen und Referenzen werden zu einer interaktiven Karte — gefüllte Punkte sind Paper aus deiner Sammlung, Umrisse sind Entdeckungs-Paper drumherum. Ziehen, erweitern und zoomen, um zu sehen, wie die Literatur zusammenhängt."
+      },
+      "list": {
+        "title": "Jedes Paper in einer durchsuchbaren Liste",
+        "body": "Nach Jahr oder Zitationszahl sortieren, nach Tag oder Sammlungs-Zugehörigkeit filtern, und direkt zurück zur Karte springen, um ein Paper im Kontext zu sehen."
+      },
+      "themes": {
+        "title": "Themen-Cluster",
+        "body": "OrbLit bettet Titel und Abstract jedes Papers ein und clustert sie automatisch — sieh, wie sich deine Lektüre thematisch gruppiert, nicht nur nach Zitations-Verbindungen."
+      },
+      "suggestions": {
+        "title": "Vorgeschlagene verwandte Paper",
+        "body": "Finde Paper, die deiner Sammlung thematisch nahe sind, aber weder zitiert werden noch selbst zitieren — als Quadrate dargestellt, damit sie sich klar von deiner Sammlung unterscheiden."
+      },
+      "zotero": {
+        "title": "Zotero-Import & -Sync",
+        "body": "Bibliothek einmal verbinden, aus jeder Sammlung eine Karte bauen und alles Gefundene direkt zurück zu Zotero hinzufügen — PDF inklusive, ohne manuellen Export/Import."
+      }
+    },
+    "footer": {
+      "rights": "© {year} OrbLit. MIT-Lizenz.",
+      "github": "GitHub",
+      "alternatives": "Alternativen",
+      "impressum": "Impressum",
+      "privacy": "Datenschutz",
+      "terms": "Nutzungsbedingungen"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Bei OrbLit anmelden",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung läuft…",
+      "google": "Mit Google fortfahren",
+      "or": "oder",
+      "noAccount": "Noch keinen Account?",
+      "signupLink": "Registrieren",
+      "forgotPassword": "Passwort vergessen?"
+    },
+    "signup": {
+      "title": "OrbLit-Konto erstellen",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Registrieren",
+      "submitting": "Konto wird erstellt…",
+      "google": "Mit Google fortfahren",
+      "or": "oder",
+      "haveAccount": "Schon einen Account?",
+      "loginLink": "Anmelden",
+      "checkInboxTitle": "Postfach prüfen",
+      "checkInboxBody": "Wir haben einen Bestätigungslink an {email} gesendet. Klicke ihn an, um dein Konto zu aktivieren."
+    },
+    "forgotPassword": {
+      "title": "Passwort zurücksetzen",
+      "subtitle": "Gib deine E-Mail-Adresse ein, wir senden dir einen Link zum Zurücksetzen deines Passworts.",
+      "email": "E-Mail",
+      "submit": "Link senden",
+      "submitting": "Wird gesendet…",
+      "backToLogin": "Zurück zur Anmeldung",
+      "checkInboxTitle": "Postfach prüfen",
+      "checkInboxBody": "Falls für {email} ein Konto existiert, haben wir einen Link zum Zurücksetzen des Passworts dorthin gesendet."
+    },
+    "resetPassword": {
+      "title": "Neues Passwort wählen",
+      "newPassword": "Neues Passwort",
+      "submit": "Passwort aktualisieren",
+      "submitting": "Wird aktualisiert…",
+      "successTitle": "Passwort aktualisiert",
+      "successBody": "Du wirst zur App weitergeleitet…",
+      "invalidTitle": "Link abgelaufen oder ungültig",
+      "invalidBody": "Bitte fordere einen neuen Link zum Zurücksetzen an."
+    }
+  },
+  "account": {
+    "title": "Konto",
+    "email": "E-Mail",
+    "logout": "Abmelden"
+  },
+  "nav": {
+    "logout": "Abmelden"
+  },
+  "localeSwitcher": {
+    "en": "English",
+    "de": "Deutsch"
+  }
+}

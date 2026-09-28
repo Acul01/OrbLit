@@ -1,0 +1,124 @@
+{
+  "landing": {
+    "nav": {
+      "github": "GitHub",
+      "login": "Log in",
+      "signup": "Sign up"
+    },
+    "hero": {
+      "title": "The citation map that lives in your Zotero library.",
+      "tagline": "OrbLit syncs directly with Zotero, finds thematic clusters in your literature, and surfaces related papers your citations alone would never show you. Free to use, and open source.",
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "View on GitHub"
+    },
+    "features": {
+      "title": "Everything orbits the paper you're reading",
+      "search": {
+        "title": "Search OpenAlex",
+        "body": "Find any paper across OpenAlex's full catalog and pull it straight onto your map."
+      },
+      "map": {
+        "title": "Visualize the network",
+        "body": "Citations and references become a network of knowledge ready to explore - drag, expand, and zoom to see how work connects."
+      },
+      "zotero": {
+        "title": "Sync with Zotero",
+        "body": "Connect your library once, then keep it in sync with one click - new papers, DOI matches, and additions get pulled in."
+      },
+      "tags": {
+        "title": "Tag & organize",
+        "body": "Color-code papers by theme, track discovery vs. your collection, and never lose the thread."
+      }
+    },
+    "showcase": {
+      "sectionTitle": "See it in action",
+      "map": {
+        "title": "Visualize the citation network",
+        "body": "Citations and references become an interactive map — filled nodes are papers already in your collection, outlined nodes are discoveries found around it. Drag, expand, and zoom to see how the literature connects."
+      },
+      "list": {
+        "title": "Every paper in one searchable list",
+        "body": "Sort by year or citation count, filter by tag or collection scope, and jump straight back to the map to see any paper in context."
+      },
+      "themes": {
+        "title": "Thematic clusters",
+        "body": "OrbLit embeds each paper's title and abstract and clusters them automatically — see how your reading actually groups by topic, not just by citation links."
+      },
+      "suggestions": {
+        "title": "Suggested related papers",
+        "body": "Find papers that are thematically close to your collection but were never cited by or citing anything you already have — shown as squares so they're easy to tell apart from your existing collection."
+      },
+      "zotero": {
+        "title": "Zotero import & sync",
+        "body": "Connect your library once, build a map from any collection, and add anything you find straight back to Zotero — PDF included, no manual export/import."
+      }
+    },
+    "footer": {
+      "rights": "© {year} OrbLit. MIT License.",
+      "github": "GitHub",
+      "alternatives": "Alternatives",
+      "impressum": "Legal notice",
+      "privacy": "Privacy policy",
+      "terms": "Terms of use"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Log in to OrbLit",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "google": "Continue with Google",
+      "or": "or",
+      "noAccount": "No account yet?",
+      "signupLink": "Sign up",
+      "forgotPassword": "Forgot password?"
+    },
+    "signup": {
+      "title": "Create your OrbLit account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign up",
+      "submitting": "Creating account…",
+      "google": "Continue with Google",
+      "or": "or",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "checkInboxTitle": "Check your inbox",
+      "checkInboxBody": "We sent a confirmation link to {email}. Click it to activate your account."
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a link to reset your password.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "backToLogin": "Back to log in",
+      "checkInboxTitle": "Check your inbox",
+      "checkInboxBody": "If an account exists for {email}, we've sent a password reset link to it."
+    },
+    "resetPassword": {
+      "title": "Choose a new password",
+      "newPassword": "New password",
+      "submit": "Update password",
+      "submitting": "Updating…",
+      "successTitle": "Password updated",
+      "successBody": "Redirecting you to the app…",
+      "invalidTitle": "Link expired or invalid",
+      "invalidBody": "Please request a new password reset link."
+    }
+  },
+  "account": {
+    "title": "Account",
+    "email": "Email",
+    "logout": "Log out"
+  },
+  "nav": {
+    "logout": "Log out"
+  },
+  "localeSwitcher": {
+    "en": "English",
+    "de": "Deutsch"
+  }
+}

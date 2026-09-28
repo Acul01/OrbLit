@@ -1,0 +1,62 @@
+// Small shared inline-style object for the login/signup pages, matching
+// the dark, minimal look of the OrbLit tool itself (see OrbLitApp.jsx)
+// rather than pulling in Tailwind classes for two simple forms.
+export const authFormStyles = {
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#0B1220",
+    color: "#E8E6DE",
+    fontFamily: "system-ui, sans-serif",
+  },
+  card: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 14,
+    width: 340,
+    padding: 28,
+    borderRadius: 10,
+    background: "#111A2C",
+    border: "1px solid #22304a",
+  },
+  title: { margin: "0 0 6px", fontSize: 20, fontWeight: 600 },
+  label: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    fontSize: 13,
+    color: "#B9C2D0",
+  },
+  input: {
+    padding: "8px 10px",
+    borderRadius: 6,
+    border: "1px solid #2A3B5C",
+    background: "#0B1220",
+    color: "#E8E6DE",
+    fontSize: 14,
+  },
+  button: {
+    marginTop: 6,
+    padding: "10px 14px",
+    borderRadius: 6,
+    border: "none",
+    background: "#4FD1C5",
+    color: "#0B1220",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  error: { color: "#E05353", fontSize: 13, margin: 0 },
+  notice: { color: "#4FD1C5", fontSize: 13, margin: 0 },
+  footer: { fontSize: 13, color: "#8593A8", margin: "6px 0 0" },
+  divider: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    color: "#5D6B85",
+    fontSize: 12,
+    margin: "2px 0",
+  },
+  dividerLine: { flex: 1, height: 1, background: "#22304a" },
+};
