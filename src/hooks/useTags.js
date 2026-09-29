@@ -3,11 +3,6 @@
 import { useState, useEffect } from "react";
 import { TAG_PALETTE } from "@/lib/citation-graph";
 
-// TODO(phase 7): tags/paperTags currently persist to localStorage. This
-// hook is the seam where that gets swapped for the Supabase `projects`
-// table — call sites elsewhere only see { tags, paperTags, createTag,
-// deleteTag, assignTagToSelected }, so the storage swap stays contained
-// here.
 function loadStoredTags() {
   try {
     const raw = localStorage.getItem("orblit-tags");

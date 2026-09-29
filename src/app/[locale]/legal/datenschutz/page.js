@@ -38,7 +38,10 @@ function De() {
           <strong>Vercel</strong> — Hosting der Anwendung
         </li>
         <li style={p.li}>
-          <strong>Google</strong> — optionale Anmeldung per Google-Konto (OAuth)
+          <strong>Google</strong> — Anmeldung per Google-Konto (OAuth)
+        </li>
+        <li style={p.li}>
+          <strong>GitHub</strong> — Anmeldung per GitHub-Konto (OAuth)
         </li>
         <li style={p.li}>
           <strong>OpenAlex</strong> — Literatursuche (öffentliche API, keine personenbezogenen
@@ -67,9 +70,9 @@ function De() {
 
       <h2 style={p.h2}>4. Konto, Anmeldung und Nutzungsdaten (Supabase)</h2>
       <p style={p.p}>
-        Für die Nutzung von OrbLit ist ein Konto erforderlich. Bei der Registrierung erheben
-        wir Ihre E-Mail-Adresse und ein verschlüsselt gespeichertes Passwort (bzw. bei Anmeldung
-        über Google die von Google übermittelte E-Mail-Adresse). Diese Daten sowie die von Ihnen
+        Für die Nutzung von OrbLit ist ein Konto erforderlich. Die Anmeldung erfolgt über
+        Google oder GitHub. Wir speichern die dabei vom Anbieter übermittelte E-Mail-Adresse.
+        Ein Passwort erheben wir nicht. Diese Daten sowie die von Ihnen
         erstellten Zitationskarten (Titel, Notizen, Tags, Kartenstruktur) werden bei unserem
         Auftragsverarbeiter Supabase Inc. auf Servern in der EU (Frankfurt) gespeichert.
         Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung). Mit Supabase besteht
@@ -80,13 +83,22 @@ function De() {
         .
       </p>
 
-      <h2 style={p.h2}>5. Anmeldung mit Google (OAuth)</h2>
+      <h2 style={p.h2}>5. Anmeldung mit Google oder GitHub (OAuth)</h2>
       <p style={p.p}>
-        Sie können sich alternativ über Ihr Google-Konto anmelden. Dabei erhalten wir von
-        Google Ihre E-Mail-Adresse zur Erstellung Ihres OrbLit-Kontos. Es gilt zusätzlich die
-        Datenschutzerklärung von Google:{" "}
+        Die Anmeldung erfolgt über Ihr Google- oder GitHub-Konto. Dabei erhalten wir die vom
+        Anbieter übermittelte E-Mail-Adresse zur Erstellung Ihres OrbLit-Kontos. Es gelten
+        zusätzlich die Datenschutzerklärungen von{" "}
         <a href="https://policies.google.com/privacy" style={p.a} target="_blank" rel="noreferrer">
-          policies.google.com/privacy
+          Google
+        </a>{" "}
+        und{" "}
+        <a
+          href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+          style={p.a}
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
         </a>
         . Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO (Ihre Einwilligung durch Auswahl dieser
         Anmeldeoption).
@@ -168,7 +180,10 @@ function En() {
           <strong>Vercel</strong> — application hosting
         </li>
         <li style={p.li}>
-          <strong>Google</strong> — optional sign-in via Google account (OAuth)
+          <strong>Google</strong> — sign-in via Google account (OAuth)
+        </li>
+        <li style={p.li}>
+          <strong>GitHub</strong> — sign-in via GitHub account (OAuth)
         </li>
         <li style={p.li}>
           <strong>OpenAlex</strong> — literature search (public API, no personal data transmitted)
@@ -195,9 +210,9 @@ function En() {
 
       <h2 style={p.h2}>4. Account, sign-in, and usage data (Supabase)</h2>
       <p style={p.p}>
-        Using OrbLit requires an account. On sign-up we collect your email address and a
-        securely hashed password (or, for Google sign-in, the email address provided by
-        Google). This data, along with the citation maps you create (titles, notes, tags, map
+        Using OrbLit requires an account. Sign-in is through Google or GitHub. We store the
+        email address the provider sends us. We do not collect a password. This data, along
+        with the citation maps you create (titles, notes, tags, map
         structure), is stored with our processor Supabase Inc. on servers in the EU
         (Frankfurt). Legal basis: Art. 6(1)(b) GDPR (contract performance). A data processing
         agreement with Supabase is in effect:{" "}
@@ -207,14 +222,24 @@ function En() {
         .
       </p>
 
-      <h2 style={p.h2}>5. Google sign-in (OAuth)</h2>
+      <h2 style={p.h2}>5. Google or GitHub sign-in (OAuth)</h2>
       <p style={p.p}>
-        You may alternatively sign in with your Google account. We receive your email address
-        from Google to create your OrbLit account. Google&apos;s privacy policy also applies:{" "}
+        Sign-in uses your Google or GitHub account. We receive the email address the provider
+        sends in order to create your OrbLit account. The privacy policies of{" "}
         <a href="https://policies.google.com/privacy" style={p.a} target="_blank" rel="noreferrer">
-          policies.google.com/privacy
-        </a>
-        . Legal basis: Art. 6(1)(a) GDPR (your consent by choosing this sign-in option).
+          Google
+        </a>{" "}
+        and{" "}
+        <a
+          href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+          style={p.a}
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>{" "}
+        also apply. Legal basis: Art. 6(1)(a) GDPR (your consent by choosing this sign-in
+        option).
       </p>
 
       <h2 style={p.h2}>6. OpenAlex search</h2>

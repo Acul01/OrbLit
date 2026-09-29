@@ -43,3 +43,6 @@ next-env.d.ts
 # local agent instructions, not part of the published repo
 /CLAUDE.md
 /AGENTS.md
+
+# local security review, not part of the published repo
+/SECURITY.md

@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { encrypt } from "@/lib/crypto";
-import { fetchZoteroCollections } from "@/lib/zotero-client";
+import { assertZoteroUserId, fetchZoteroCollections } from "@/lib/zotero-client";
+import { readJson } from "@/lib/request-body";
+import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 // GET: connection status only — never returns the key.
 export async function GET() {
@@ -39,20 +41,40 @@ export async function POST(request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const { zoteroUserId, zoteroApiKey } = await request.json().catch(() => ({}));
+  const body = await readJson(request).catch((error) => {
+    if (error?.status === 413) return { __tooLarge: true };
+    return {};
+  });
+  if (body.__tooLarge) {
+    return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+  }
+  const { zoteroUserId, zoteroApiKey } = body;
   if (!zoteroUserId?.trim() || !zoteroApiKey?.trim()) {
     return NextResponse.json(
       { error: "User ID and API key are required" },
       { status: 400 }
     );
   }
+  if (zoteroApiKey.trim().length > 64) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  let zoteroId;
+  try {
+    zoteroId = assertZoteroUserId(zoteroUserId.trim());
+  } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  try {
+    await assertWithinRateLimit(user.id, "zotero_credentials", 10);
+  } catch (error) {
+    return rateLimitResponse(error);
+  }
 
   let collections;
   try {
-    collections = await fetchZoteroCollections(
-      zoteroUserId.trim(),
-      zoteroApiKey.trim()
-    );
+    collections = await fetchZoteroCollections(zoteroId, zoteroApiKey.trim());
   } catch {
     return NextResponse.json(
       { error: "Connection failed. Check User ID and API key." },
@@ -60,12 +82,19 @@ export async function POST(request) {
     );
   }
 
+  let encryptedApiKey;
+  try {
+    encryptedApiKey = encrypt(zoteroApiKey.trim(), user.id);
+  } catch {
+    return NextResponse.json({ error: "Failed to save credentials" }, { status: 500 });
+  }
+
   const admin = createAdminClient();
   const { error } = await admin.from("zotero_credentials").upsert(
     {
       user_id: user.id,
-      zotero_user_id: zoteroUserId.trim(),
-      encrypted_api_key: encrypt(zoteroApiKey.trim()),
+      zotero_user_id: zoteroId,
+      encrypted_api_key: encryptedApiKey,
     },
     { onConflict: "user_id" }
   );

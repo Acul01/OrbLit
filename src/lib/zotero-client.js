@@ -1,15 +1,38 @@
-// Isomorphic Zotero API helpers — plain fetch() calls with no framework
-// dependency, so they work from both server code (app/api/zotero/*, which
-// holds the decrypted API key) and, historically, the browser. As of
-// phase 6 only the server-side routes call these; the client
-// (OrbLitApp.jsx / useZoteroSync) talks to /api/zotero/* instead and
-// never sees a Zotero API key.
+// Server-side Zotero API helpers. The decrypted API key stays in the route
+// handlers that call these; the browser only talks to /api/zotero/*.
 import crypto from "crypto";
+import { safeFetchBuffer } from "@/lib/safe-fetch";
 
 export const ZOTERO_API = "https://api.zotero.org";
 
+// Zotero object keys are 8 characters from this alphabet (no 0, 1, O, I).
+const ZOTERO_KEY = /^[23456789ABCDEFGHIJKLMNPQRSTUVWXYZ]{8}$/;
+const ZOTERO_USER_ID = /^\d{1,12}$/;
+const MAX_ITEM_PAGES = 100;
+
+function inputError(message) {
+  const error = new Error(message);
+  error.code = "ZOTERO_INPUT";
+  return error;
+}
+
+export function assertZoteroUserId(userId) {
+  const id = String(userId || "");
+  if (!ZOTERO_USER_ID.test(id)) throw inputError("Invalid Zotero user id");
+  return id;
+}
+
+export function assertZoteroKey(key) {
+  if (typeof key !== "string" || !ZOTERO_KEY.test(key)) throw inputError("Invalid Zotero key");
+  return key;
+}
+
+function userBase(userId) {
+  return `${ZOTERO_API}/users/${encodeURIComponent(assertZoteroUserId(userId))}`;
+}
+
 export async function fetchZoteroCollections(userId, apiKey) {
-  const res = await fetch(`${ZOTERO_API}/users/${userId}/collections?limit=200`, {
+  const res = await fetch(`${userBase(userId)}/collections?limit=200`, {
     headers: { "Zotero-API-Key": apiKey },
   });
   if (!res.ok) throw new Error("Connection failed");
@@ -19,28 +42,36 @@ export async function fetchZoteroCollections(userId, apiKey) {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export async function fetchAllZoteroItems(userId, apiKey, collectionKey) {
-  const headers = { "Zotero-API-Key": apiKey };
-  const base = collectionKey
-    ? `${ZOTERO_API}/users/${userId}/collections/${collectionKey}/items/top`
-    : `${ZOTERO_API}/users/${userId}/items/top`;
-  const all = [];
-  let start = 0;
-  while (true) {
-    const res = await fetch(`${base}?limit=100&start=${start}`, { headers });
-    if (!res.ok) throw new Error("Failed to fetch Zotero items");
-    const batch = await res.json();
-    all.push(...batch);
-    if (batch.length < 100) break;
-    start += 100;
-  }
-  return all.filter(
+function visibleItems(batch) {
+  return batch.filter(
     (it) => it.data && !["attachment", "note", "annotation"].includes(it.data.itemType)
   );
 }
 
+export async function fetchAllZoteroItems(userId, apiKey, collectionKey) {
+  const headers = { "Zotero-API-Key": apiKey };
+  const collection = collectionKey ? assertZoteroKey(collectionKey) : null;
+  const base = collection
+    ? `${userBase(userId)}/collections/${encodeURIComponent(collection)}/items/top`
+    : `${userBase(userId)}/items/top`;
+  const all = [];
+  let start = 0;
+  for (let page = 0; page < MAX_ITEM_PAGES; page++) {
+    const res = await fetch(`${base}?limit=100&start=${start}`, { headers });
+    if (!res.ok) throw new Error("Failed to fetch Zotero items");
+    const batch = await res.json();
+    if (!Array.isArray(batch)) throw new Error("Failed to fetch Zotero items");
+    all.push(...visibleItems(batch));
+    if (batch.length < 100) {
+      return { items: all, truncated: false };
+    }
+    start += 100;
+  }
+  return { items: all, truncated: true };
+}
+
 export async function createZoteroCollection(userId, apiKey, name) {
-  const res = await fetch(`${ZOTERO_API}/users/${userId}/collections`, {
+  const res = await fetch(`${userBase(userId)}/collections`, {
     method: "POST",
     headers: {
       "Zotero-API-Key": apiKey,
@@ -57,14 +88,15 @@ export async function createZoteroCollection(userId, apiKey, name) {
 }
 
 export async function createZoteroItem(userId, apiKey, item, collectionKey) {
+  const collection = collectionKey ? assertZoteroKey(collectionKey) : null;
   const template = await (
     await fetch(`${ZOTERO_API}/items/new?itemType=journalArticle`)
   ).json();
 
   const payload = { ...template, ...item };
-  if (collectionKey) payload.collections = [collectionKey];
+  if (collection) payload.collections = [collection];
 
-  const res = await fetch(`${ZOTERO_API}/users/${userId}/items`, {
+  const res = await fetch(`${userBase(userId)}/items`, {
     method: "POST",
     headers: {
       "Zotero-API-Key": apiKey,
@@ -76,23 +108,21 @@ export async function createZoteroItem(userId, apiKey, item, collectionKey) {
 }
 
 /** Downloads an open-access PDF and attaches it to an existing Zotero item
- *  as a real stored file attachment (not just a link) — follows Zotero's
- *  three-step file upload flow: register upload intent, PUT the bytes to
- *  the returned storage URL, then confirm registration. Every step is
- *  wrapped so a failure anywhere (no PDF at the URL, quota exceeded,
- *  network hiccup) just means "not attached" rather than breaking the
- *  metadata-only item that was already created successfully.
+ *  as a real stored file attachment (not just a link). The PDF URL must
+ *  already have been chosen by the server (OpenAlex), and the download
+ *  goes through safeFetchBuffer. A failure anywhere means "not attached";
+ *  the metadata item created before this is left in place.
  *  Returns { attached: boolean, reason?: string }. */
 export async function attachPdfToZotero(userId, apiKey, parentItemKey, pdfUrl) {
+  const parentKey = assertZoteroKey(parentItemKey);
   let buffer;
   try {
-    const pdfRes = await fetch(pdfUrl);
-    if (!pdfRes.ok) return { attached: false, reason: "download_failed" };
-    const contentType = pdfRes.headers.get("content-type") || "";
-    buffer = Buffer.from(await pdfRes.arrayBuffer());
+    const downloaded = await safeFetchBuffer(pdfUrl);
     const looksLikePdf =
-      contentType.includes("pdf") || buffer.subarray(0, 5).toString("latin1") === "%PDF-";
+      downloaded.contentType.includes("pdf") ||
+      downloaded.buffer.subarray(0, 5).toString("latin1") === "%PDF-";
     if (!looksLikePdf) return { attached: false, reason: "not_a_pdf" };
+    buffer = downloaded.buffer;
   } catch {
     return { attached: false, reason: "download_failed" };
   }
@@ -100,29 +130,17 @@ export async function attachPdfToZotero(userId, apiKey, parentItemKey, pdfUrl) {
   const filename = "attachment.pdf";
   const md5 = crypto.createHash("md5").update(buffer).digest("hex");
   const mtime = Date.now();
-  console.log(
-    "[zotero pdf] downloaded:",
-    pdfUrl,
-    "bytes:",
-    buffer.length,
-    "md5:",
-    md5
-  );
 
-  // Step 1: create the attachment item. md5/mtime are deliberately left
-  // off here — setting them at creation time (before any bytes exist on
-  // Zotero's storage) can make the server believe a matching file is
-  // already attached, short-circuiting the real upload in step 2.
   let attachmentKey;
   let attachmentVersion;
   try {
-    const createRes = await fetch(`${ZOTERO_API}/users/${userId}/items`, {
+    const createRes = await fetch(`${userBase(userId)}/items`, {
       method: "POST",
       headers: { "Zotero-API-Key": apiKey, "Content-Type": "application/json" },
       body: JSON.stringify([
         {
           itemType: "attachment",
-          parentItem: parentItemKey,
+          parentItem: parentKey,
           linkMode: "imported_file",
           title: filename,
           filename,
@@ -130,28 +148,19 @@ export async function attachPdfToZotero(userId, apiKey, parentItemKey, pdfUrl) {
         },
       ]),
     });
-    const createBodyText = await createRes.text();
-    console.log(
-      "[zotero pdf] step1 create attachment:",
-      createRes.status,
-      createBodyText.slice(0, 500)
-    );
-    const createResult = JSON.parse(createBodyText);
+    const createResult = await createRes.json();
     const created = createResult.successful?.["0"];
     attachmentKey = created?.key;
     attachmentVersion = created?.version;
     if (!attachmentKey) return { attached: false, reason: "attachment_create_failed" };
-  } catch (e) {
-    console.log("[zotero pdf] step1 threw:", e?.message);
+  } catch {
     return { attached: false, reason: "attachment_create_failed" };
   }
 
-  // Step 2: request upload authorization for that attachment. Brand new
-  // attachment with no file yet -> If-None-Match: *.
   let auth;
   try {
     const authRes = await fetch(
-      `${ZOTERO_API}/users/${userId}/items/${attachmentKey}/file`,
+      `${userBase(userId)}/items/${encodeURIComponent(attachmentKey)}/file`,
       {
         method: "POST",
         headers: {
@@ -167,51 +176,31 @@ export async function attachPdfToZotero(userId, apiKey, parentItemKey, pdfUrl) {
         }),
       }
     );
-    const authBodyText = await authRes.text();
-    console.log(
-      "[zotero pdf] step2 upload auth:",
-      authRes.status,
-      authBodyText.slice(0, 800)
-    );
-    auth = JSON.parse(authBodyText);
-  } catch (e) {
-    console.log("[zotero pdf] step2 threw:", e?.message);
+    auth = await authRes.json();
+  } catch {
     return { attached: false, reason: "upload_auth_failed" };
   }
-  if (auth.exists) return { attached: true }; // identical file already on Zotero's storage
-  if (!auth.url) return { attached: false, reason: "upload_auth_failed" };
+  if (auth.exists) return { attached: true };
+  if (!auth.url || typeof auth.url !== "string") return { attached: false, reason: "upload_auth_failed" };
 
-  // Step 3: upload the raw bytes, sandwiched between Zotero's given
-  // multipart prefix/suffix — Zotero pre-builds the multipart envelope
-  // server-side, so the client just concatenates around the file content.
   try {
+    const uploadUrl = new URL(auth.url);
+    if (uploadUrl.protocol !== "https:") return { attached: false, reason: "upload_failed" };
     const body = Buffer.concat([
       Buffer.from(auth.prefix, "binary"),
       buffer,
       Buffer.from(auth.suffix, "binary"),
     ]);
-    const uploadRes = await fetch(auth.url, {
+    const uploadRes = await fetch(uploadUrl, {
       method: "POST",
       headers: { "Content-Type": auth.contentType },
       body,
     });
-    const uploadBodyText = await uploadRes.text().catch(() => "");
-    console.log(
-      "[zotero pdf] step3 upload bytes:",
-      uploadRes.status,
-      uploadBodyText.slice(0, 500)
-    );
     if (!uploadRes.ok) return { attached: false, reason: "upload_failed" };
-  } catch (e) {
-    console.log("[zotero pdf] step3 threw:", e?.message);
+  } catch {
     return { attached: false, reason: "upload_failed" };
   }
 
-  // Step 4: register the completed upload. Use the attachment's version
-  // from step 1 (If-Match) rather than If-None-Match: * — the item may
-  // already be considered to have a "version" after creation, and the
-  // register call needs to reference the right one for Zotero to accept
-  // it as completing this specific upload's registration.
   try {
     const registerHeaders = {
       "Zotero-API-Key": apiKey,
@@ -223,22 +212,15 @@ export async function attachPdfToZotero(userId, apiKey, parentItemKey, pdfUrl) {
       registerHeaders["If-None-Match"] = "*";
     }
     const registerRes = await fetch(
-      `${ZOTERO_API}/users/${userId}/items/${attachmentKey}/file`,
+      `${userBase(userId)}/items/${encodeURIComponent(attachmentKey)}/file`,
       {
         method: "POST",
         headers: registerHeaders,
         body: new URLSearchParams({ upload: auth.uploadKey }),
       }
     );
-    const registerBodyText = await registerRes.text().catch(() => "");
-    console.log(
-      "[zotero pdf] step4 register:",
-      registerRes.status,
-      registerBodyText.slice(0, 500)
-    );
     if (!registerRes.ok) return { attached: false, reason: "register_failed" };
-  } catch (e) {
-    console.log("[zotero pdf] step4 threw:", e?.message);
+  } catch {
     return { attached: false, reason: "register_failed" };
   }
 

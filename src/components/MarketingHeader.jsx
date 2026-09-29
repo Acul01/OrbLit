@@ -2,7 +2,6 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import OrbitIcon from "@/components/OrbitIcon";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
-import { GITHUB_URL } from "@/lib/seo";
 
 /** Shared top nav for public marketing pages (landing, compare/*,
  *  zotero-citation-map) — logo, locale switcher, login/signup. Extracted
@@ -18,9 +17,6 @@ export default function MarketingHeader() {
         <span style={s.logo}>OrbLit</span>
       </Link>
       <div style={s.navRight}>
-        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" style={s.navLink}>
-          {t("github")}
-        </a>
         <LocaleSwitcher />
         <Link href="/login" style={s.navLink}>
           {t("login")}

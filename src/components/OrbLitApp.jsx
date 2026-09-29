@@ -1262,10 +1262,9 @@ export default function App() {
     }
     setAddingId(node.id);
     try {
-      // Always re-fetch the full work — besides authorships/abstract (which
-      // a bare discovery node may not carry yet), this is also where the
-      // open-access PDF URL comes from, so it has to run every time, not
-      // just when authorships are missing.
+      // Always re-fetch the full work — a bare discovery node may not
+      // carry authorships or an abstract yet. The open-access PDF, if any,
+      // is resolved on the server from this work id.
       const w = await (await fetch(`${API}/${node.id}`)).json();
       const full = {
         ...node,
@@ -1273,10 +1272,6 @@ export default function App() {
         doi: normalizeDoi(w.doi),
         primary_location: w.primary_location || null,
         abstract_inverted_index: w.abstract_inverted_index,
-        oaPdfUrl:
-          w.best_oa_location?.pdf_url ||
-          (w.open_access?.is_oa ? w.open_access?.oa_url : null) ||
-          null,
       };
 
       const res = await fetch("/api/zotero/items", {

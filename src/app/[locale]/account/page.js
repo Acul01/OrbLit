@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import BackToHomeLink from "@/components/BackToHomeLink";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 export default async function AccountPage() {
   const t = await getTranslations("account");
@@ -28,6 +29,7 @@ export default async function AccountPage() {
             {t("logout")}
           </button>
         </form>
+        <DeleteAccountButton />
       </div>
     </div>
   );

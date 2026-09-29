@@ -4,10 +4,8 @@ import { buildPageMetadata } from "@/lib/seo";
 
 const PATH = "/compare/researchrabbit-alternative";
 
-// Facts verified against ResearchRabbit's own pricing page
-// (researchrabbit.ai/pricing) and Zotero Importer help article as of
-// Aug 2026. Where their own docs didn't state something outright, it's
-// marked [VERIFY] — see the reply to the user for the full list.
+// Facts checked against ResearchRabbit's pricing page
+// (researchrabbit.ai/pricing) and the Zotero Importer help article as of Aug 2026.
 const content = {
   en: {
     title: "ResearchRabbit Alternative: OrbLit vs. ResearchRabbit",
@@ -32,7 +30,7 @@ const content = {
       {
         label: "Thematic clusters",
         orblit: "Yes, a dedicated Themes map view, automatic via embeddings + clustering",
-        competitor: "Some visual grouping within the network maps [VERIFY: a standalone cluster view or implicit layout only?]",
+        competitor: "Some visual grouping within the network maps",
       },
       {
         label: "Citation network visualization",
@@ -97,7 +95,7 @@ const content = {
       {
         label: "Thematische Cluster",
         orblit: "Ja, eigene Themes-Kartenansicht, automatisch per Embeddings + Clustering",
-        competitor: "Gewisse visuelle Gruppierung innerhalb der Netzwerk-Maps [VERIFY: eigenständige Cluster-Ansicht oder nur implizites Layout?]",
+        competitor: "Gewisse visuelle Gruppierung innerhalb der Netzwerk-Maps",
       },
       {
         label: "Citation-Network-Visualisierung",

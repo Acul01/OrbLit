@@ -14,11 +14,12 @@ import { createClient } from "@/lib/supabase/client";
 // per session — gated on the same "is this a new ref for this session"
 // check as the sessionStorage write, so page refreshes don't inflate it.
 const REF_KEY = "orblit_ref";
+const REF_PATTERN = /^[A-Za-z0-9_-]{1,80}$/;
 
 export function captureRefFromUrl(searchParams) {
   if (typeof window === "undefined") return;
   const ref = searchParams.get("ref");
-  if (!ref) return;
+  if (!ref || !REF_PATTERN.test(ref)) return;
   if (sessionStorage.getItem(REF_KEY) === ref) return;
   sessionStorage.setItem(REF_KEY, ref);
   logClick(ref);

@@ -5,6 +5,13 @@ import { getEmbeddings } from "@/lib/embeddings";
 import { clusterVectors, projectTo2D } from "@/lib/clustering";
 import { resolveAbstractFallback } from "@/lib/abstract-fallback";
 import { mapPool } from "@/lib/citation-graph";
+import { isOpenAlexWorkId } from "@/lib/openalex";
+import { readJson } from "@/lib/request-body";
+import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+
+const MAX_PAPERS = 300;
+const MAX_TITLE = 500;
+const MAX_ABSTRACT = 8000;
 
 // POST { papers: [{ id, title, abstract, doi }], clusterCount }
 //
@@ -27,20 +34,38 @@ export async function POST(request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const { papers, clusterCount } = await request.json().catch(() => ({}));
+  let body;
+  try {
+    body = await readJson(request);
+  } catch (error) {
+    if (error?.status === 413) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+  const { papers, clusterCount } = body;
   if (!Array.isArray(papers)) {
     return NextResponse.json({ error: "Missing papers" }, { status: 400 });
   }
+  if (papers.length > MAX_PAPERS) {
+    return NextResponse.json({ error: "Too many papers" }, { status: 400 });
+  }
 
-  const candidates = papers.filter((p) => p.id && p.title);
-  // Every candidate has an OpenAlex id, so every one of them is at least
-  // eligible for the PDF-extraction last resort (which only needs the id,
-  // not a DOI) — resolveAbstractFallback itself skips the DOI-only steps
-  // when there's no DOI.
+  try {
+    await assertWithinRateLimit(user.id, "clusters", 10);
+  } catch (error) {
+    return rateLimitResponse(error);
+  }
+
+  const candidates = papers
+    .filter((p) => isOpenAlexWorkId(p.id) && typeof p.title === "string" && p.title.trim())
+    .map((p) => ({
+      id: p.id,
+      title: p.title.trim().slice(0, MAX_TITLE),
+      abstract: typeof p.abstract === "string" ? p.abstract.slice(0, MAX_ABSTRACT) : "",
+      doi: typeof p.doi === "string" ? p.doi.trim().slice(0, 256) : "",
+    }));
   const missingAbstract = candidates.filter((p) => !p.abstract);
-  console.log(
-    `[clusters] ${missingAbstract.length} missing abstract, ${missingAbstract.filter((p) => p.doi).length} have a DOI to try`
-  );
 
   const resolved = {};
   if (missingAbstract.length) {
@@ -51,8 +76,8 @@ export async function POST(request) {
     await mapPool(missingAbstract, 5, async (p) => {
       const abstract = await resolveAbstractFallback(p.doi, p.id);
       if (abstract) {
-        p.abstract = abstract;
-        resolved[p.id] = abstract;
+        p.abstract = abstract.slice(0, MAX_ABSTRACT);
+        resolved[p.id] = p.abstract;
       }
     });
   }
@@ -73,7 +98,7 @@ export async function POST(request) {
   try {
     vectorsById = await getEmbeddings(admin, usable);
   } catch (err) {
-    console.error("Embeddings request failed:", err.message);
+    console.error("Embeddings request failed:", err.status || "error");
     return NextResponse.json({ error: "Embedding generation failed" }, { status: 502 });
   }
 

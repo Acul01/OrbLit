@@ -1,7 +1,6 @@
 {
   "landing": {
     "nav": {
-      "github": "GitHub",
       "login": "Anmelden",
       "signup": "Registrieren"
     },
@@ -70,10 +69,10 @@
       "submit": "Anmelden",
       "submitting": "Anmeldung läuft…",
       "google": "Mit Google fortfahren",
-      "or": "oder",
+      "github": "Mit GitHub fortfahren",
       "noAccount": "Noch keinen Account?",
       "signupLink": "Registrieren",
-      "forgotPassword": "Passwort vergessen?"
+      "oauthFailed": "Die Anmeldung wurde nicht abgeschlossen. Versuche es erneut mit Google oder GitHub."
     },
     "signup": {
       "title": "OrbLit-Konto erstellen",
@@ -82,11 +81,10 @@
       "submit": "Registrieren",
       "submitting": "Konto wird erstellt…",
       "google": "Mit Google fortfahren",
-      "or": "oder",
+      "github": "Mit GitHub fortfahren",
       "haveAccount": "Schon einen Account?",
       "loginLink": "Anmelden",
-      "checkInboxTitle": "Postfach prüfen",
-      "checkInboxBody": "Wir haben einen Bestätigungslink an {email} gesendet. Klicke ihn an, um dein Konto zu aktivieren."
+      "oauthFailed": "Die Registrierung wurde nicht abgeschlossen. Versuche es erneut mit Google oder GitHub."
     },
     "forgotPassword": {
       "title": "Passwort zurücksetzen",
@@ -112,7 +110,13 @@
   "account": {
     "title": "Konto",
     "email": "E-Mail",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "delete": "Konto löschen",
+    "deleteConfirm": "Das löscht dein Konto, deine Karten und die Zotero-Verbindung dauerhaft.",
+    "deleteYes": "Endgültig löschen",
+    "deleteNo": "Abbrechen",
+    "deleting": "Wird gelöscht…",
+    "deleteError": "Das Konto konnte nicht gelöscht werden."
   },
   "nav": {
     "logout": "Abmelden"

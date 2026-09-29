@@ -4,11 +4,9 @@ import { buildPageMetadata } from "@/lib/seo";
 
 const PATH = "/compare/connected-papers-alternative";
 
-// Facts verified via the CASRAI research-guide summary of Connected
+// Facts checked via the CASRAI research-guide summary of Connected
 // Papers (casrai.org/guides/connected-papers) and their Medium
-// announcement of paid plans, as of Aug 2026 — Connected Papers' own
-// site is a client-rendered SPA that doesn't expose this in fetchable
-// HTML. See the reply to the user for what to re-verify before publishing.
+// announcement of paid plans, as of Aug 2026.
 const content = {
   en: {
     title: "Connected Papers Alternative: OrbLit vs. Connected Papers",

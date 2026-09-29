@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getZoteroCredentials } from "@/lib/zotero-server";
 import { fetchZoteroCollections, createZoteroCollection } from "@/lib/zotero-client";
+import { readJson } from "@/lib/request-body";
+import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 // Re-fetches the collection list using the stored (encrypted) credentials —
 // used to restore the UI on page load without asking the user to re-enter
@@ -21,9 +23,14 @@ export async function GET() {
   }
 
   try {
+    await assertWithinRateLimit(user.id, "zotero_collections", 60);
     const collections = await fetchZoteroCollections(creds.zoteroUserId, creds.apiKey);
     return NextResponse.json({ collections });
-  } catch {
+  } catch (error) {
+    if (error?.status === 429 || error?.status === 503) return rateLimitResponse(error);
+    if (error?.code === "ZOTERO_INPUT") {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
     return NextResponse.json({ error: "Failed to fetch collections" }, { status: 502 });
   }
 }
@@ -46,15 +53,29 @@ export async function POST(request) {
     return NextResponse.json({ error: "Not connected" }, { status: 404 });
   }
 
-  const { name } = await request.json().catch(() => ({}));
-  if (!name?.trim()) {
+  let body;
+  try {
+    body = await readJson(request);
+  } catch (error) {
+    if (error?.status === 413) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (!name || name.length > 200) {
     return NextResponse.json({ error: "Collection name is required" }, { status: 400 });
   }
 
   try {
-    const collection = await createZoteroCollection(creds.zoteroUserId, creds.apiKey, name.trim());
+    await assertWithinRateLimit(user.id, "zotero_collections", 60);
+    const collection = await createZoteroCollection(creds.zoteroUserId, creds.apiKey, name);
     return NextResponse.json({ collection });
-  } catch {
+  } catch (error) {
+    if (error?.status === 429 || error?.status === 503) return rateLimitResponse(error);
+    if (error?.code === "ZOTERO_INPUT") {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
     return NextResponse.json({ error: "Failed to create collection" }, { status: 502 });
   }
 }

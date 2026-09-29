@@ -40,10 +40,11 @@ export default function FeedbackButton() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("not authenticated");
 
+      const trimmed = message.trim().slice(0, 2000);
       const { error: insertError } = await supabase.from("feedback").insert({
         user_id: user.id,
         rating,
-        message: message.trim() || null,
+        message: trimmed || null,
       });
       if (insertError) throw insertError;
       setSubmitted(true);
@@ -106,6 +107,7 @@ export default function FeedbackButton() {
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  maxLength={2000}
                   placeholder="What's working, what's missing, what would you like to see?"
                   style={styles.textarea}
                   rows={4}

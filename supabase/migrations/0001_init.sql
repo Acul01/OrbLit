@@ -1,5 +1,4 @@
--- RefMap initial schema: profiles, subscriptions, projects, zotero_credentials
--- See /Users/luca/.claude/plans/lazy-mixing-sundae.md for the full design rationale.
+-- Initial schema: profiles, subscriptions, projects, zotero_credentials.
 
 -- ============================================================
 -- profiles

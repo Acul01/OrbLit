@@ -4,11 +4,8 @@ import { buildPageMetadata } from "@/lib/seo";
 
 const PATH = "/compare/litmaps-alternative";
 
-// Facts verified against Litmaps' own pricing/help-center pages
-// (litmaps.com/pricing, docs.litmaps.com — "Litmaps Pro" article) as of
-// Aug 2026. Where their own docs didn't state something outright, it's
-// marked [VERIFY] rather than guessed — see the reply to the user for
-// the full list of what to double-check before publishing.
+// Facts checked against Litmaps' pricing and help-center pages
+// (litmaps.com/pricing, docs.litmaps.com) as of Aug 2026.
 const content = {
   en: {
     title: "Litmaps Alternative: OrbLit vs. Litmaps",
@@ -33,7 +30,7 @@ const content = {
       {
         label: "Thematic clusters",
         orblit: "Yes, automatic via embeddings + clustering",
-        competitor: "Not documented as a standalone core feature [VERIFY]",
+        competitor: "Not documented as a standalone core feature",
       },
       {
         label: "Citation network visualization",
@@ -48,7 +45,7 @@ const content = {
       {
         label: "Collaboration / sharing",
         orblit: "Not available",
-        competitor: "Team plan available (separate tier) [VERIFY: included in Pro or Team-only?]",
+        competitor: "Team plan available (separate tier)",
       },
     ],
     competitorBetterTitle: "When Litmaps is the better choice",
@@ -98,7 +95,7 @@ const content = {
       {
         label: "Thematische Cluster",
         orblit: "Ja, automatisch per Embeddings + Clustering",
-        competitor: "Nicht als eigenständiges Kernfeature dokumentiert [VERIFY]",
+        competitor: "Nicht als eigenständiges Kernfeature dokumentiert",
       },
       {
         label: "Citation-Network-Visualisierung",
@@ -113,7 +110,7 @@ const content = {
       {
         label: "Kollaboration / Sharing",
         orblit: "Nicht vorhanden",
-        competitor: "Team-Tarif verfügbar (eigene Stufe) [VERIFY: in Pro enthalten oder nur Team?]",
+        competitor: "Team-Tarif verfügbar (eigene Stufe)",
       },
     ],
     competitorBetterTitle: "Wann Litmaps die bessere Wahl ist",

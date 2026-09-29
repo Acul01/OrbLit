@@ -20,29 +20,21 @@
 // entire route — pinned to v1.x instead, a plain-Node text extractor with
 // no DOM dependency.
 import pdf from "pdf-parse/lib/pdf-parse.js";
-import { API as OPENALEX_WORKS_API } from "@/lib/citation-graph";
 import { s2Fetch } from "@/lib/semantic-scholar-client";
+import { fetchOpenAlexPdfUrl, isOpenAlexWorkId } from "@/lib/openalex";
+import { safeFetchBuffer } from "@/lib/safe-fetch";
 
 const S2_API = "https://api.semanticscholar.org/graph/v1/paper";
 const CROSSREF_API = "https://api.crossref.org/works";
-const CONTACT_EMAIL = "rippeluca@gmail.com"; // Crossref "polite pool" mailto
-const PDF_MAX_BYTES = 20 * 1024 * 1024; // skip anything unusually large
-const PDF_FETCH_TIMEOUT_MS = 15000;
+const CONTACT_EMAIL = process.env.OPENALEX_MAILTO || "";
 
 async function fetchFromSemanticScholar(doi) {
   try {
     const res = await s2Fetch(`${S2_API}/DOI:${encodeURIComponent(doi)}?fields=abstract`);
-    if (!res.ok) {
-      console.log(`[abstract-fallback] S2 ${res.status} for ${doi}`);
-      return null;
-    }
+    if (!res.ok) return null;
     const data = await res.json();
-    if (!data.abstract) {
-      console.log(`[abstract-fallback] S2 200 but no abstract field for ${doi}`);
-    }
     return data.abstract || null;
-  } catch (e) {
-    console.log(`[abstract-fallback] S2 threw for ${doi}:`, e?.message);
+  } catch {
     return null;
   }
 }
@@ -59,37 +51,14 @@ function stripJats(raw) {
 
 async function fetchFromCrossref(doi) {
   try {
-    const res = await fetch(
-      `${CROSSREF_API}/${encodeURIComponent(doi)}?mailto=${encodeURIComponent(CONTACT_EMAIL)}`
-    );
-    if (!res.ok) {
-      console.log(`[abstract-fallback] Crossref ${res.status} for ${doi}`);
-      return null;
-    }
+    const mailto = CONTACT_EMAIL ? `?mailto=${encodeURIComponent(CONTACT_EMAIL)}` : "";
+    const res = await fetch(`${CROSSREF_API}/${encodeURIComponent(doi)}${mailto}`);
+    if (!res.ok) return null;
     const data = await res.json();
     const raw = data.message?.abstract;
-    if (!raw) {
-      console.log(`[abstract-fallback] Crossref 200 but no abstract field for ${doi}`);
-      return null;
-    }
+    if (!raw) return null;
     const cleaned = stripJats(raw);
     return cleaned || null;
-  } catch (e) {
-    console.log(`[abstract-fallback] Crossref threw for ${doi}:`, e?.message);
-    return null;
-  }
-}
-
-async function getOpenAlexPdfUrl(workId) {
-  try {
-    const res = await fetch(`${OPENALEX_WORKS_API}/${workId}`);
-    if (!res.ok) return null;
-    const w = await res.json();
-    return (
-      w.best_oa_location?.pdf_url ||
-      (w.open_access?.is_oa ? w.open_access?.oa_url : null) ||
-      null
-    );
   } catch {
     return null;
   }
@@ -117,33 +86,19 @@ function extractAbstractFromText(text) {
 }
 
 async function fetchFromPdfExtraction(workId) {
-  const pdfUrl = await getOpenAlexPdfUrl(workId);
+  if (!isOpenAlexWorkId(workId)) return null;
+  const pdfUrl = await fetchOpenAlexPdfUrl(workId);
   if (!pdfUrl) return null;
 
   let buffer;
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), PDF_FETCH_TIMEOUT_MS);
-    const res = await fetch(pdfUrl, { signal: controller.signal }).finally(() =>
-      clearTimeout(timeout)
-    );
-    if (!res.ok) {
-      console.log(`[abstract-fallback] PDF download ${res.status} for ${workId}`);
-      return null;
-    }
-    const contentLength = Number(res.headers.get("content-length") || 0);
-    if (contentLength > PDF_MAX_BYTES) {
-      console.log(`[abstract-fallback] PDF too large (${contentLength}B) for ${workId}, skipping`);
-      return null;
-    }
-    const arrayBuffer = await res.arrayBuffer();
-    if (arrayBuffer.byteLength > PDF_MAX_BYTES) {
-      console.log(`[abstract-fallback] PDF too large after download for ${workId}, skipping`);
-      return null;
-    }
-    buffer = Buffer.from(arrayBuffer);
-  } catch (e) {
-    console.log(`[abstract-fallback] PDF download threw for ${workId}:`, e?.message);
+    const downloaded = await safeFetchBuffer(pdfUrl);
+    const looksLikePdf =
+      downloaded.contentType.includes("pdf") ||
+      downloaded.buffer.subarray(0, 5).toString("latin1") === "%PDF-";
+    if (!looksLikePdf) return null;
+    buffer = downloaded.buffer;
+  } catch {
     return null;
   }
 
@@ -151,13 +106,8 @@ async function fetchFromPdfExtraction(workId) {
     // Abstracts live on page 1 (occasionally spilling onto page 2) — no
     // need to parse the whole paper.
     const result = await pdf(buffer, { max: 2 });
-    const abstract = extractAbstractFromText(result.text || "");
-    if (!abstract) {
-      console.log(`[abstract-fallback] PDF text extracted but no clear abstract for ${workId}`);
-    }
-    return abstract;
-  } catch (e) {
-    console.log(`[abstract-fallback] PDF parse threw for ${workId}:`, e?.message);
+    return extractAbstractFromText(result.text || "");
+  } catch {
     return null;
   }
 }
@@ -179,6 +129,5 @@ export async function resolveAbstractFallback(doi, workId) {
     const fromPdf = await fetchFromPdfExtraction(workId);
     if (fromPdf) return fromPdf;
   }
-  console.log(`[abstract-fallback] no abstract found anywhere for ${doi || workId}`);
   return null;
 }

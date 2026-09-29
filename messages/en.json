@@ -1,7 +1,6 @@
 {
   "landing": {
     "nav": {
-      "github": "GitHub",
       "login": "Log in",
       "signup": "Sign up"
     },
@@ -70,10 +69,10 @@
       "submit": "Log in",
       "submitting": "Logging in…",
       "google": "Continue with Google",
-      "or": "or",
+      "github": "Continue with GitHub",
       "noAccount": "No account yet?",
       "signupLink": "Sign up",
-      "forgotPassword": "Forgot password?"
+      "oauthFailed": "Sign-in did not complete. Try Google or GitHub again."
     },
     "signup": {
       "title": "Create your OrbLit account",
@@ -82,11 +81,10 @@
       "submit": "Sign up",
       "submitting": "Creating account…",
       "google": "Continue with Google",
-      "or": "or",
+      "github": "Continue with GitHub",
       "haveAccount": "Already have an account?",
       "loginLink": "Log in",
-      "checkInboxTitle": "Check your inbox",
-      "checkInboxBody": "We sent a confirmation link to {email}. Click it to activate your account."
+      "oauthFailed": "Sign-up did not complete. Try Google or GitHub again."
     },
     "forgotPassword": {
       "title": "Reset your password",
@@ -112,7 +110,13 @@
   "account": {
     "title": "Account",
     "email": "Email",
-    "logout": "Log out"
+    "logout": "Log out",
+    "delete": "Delete account",
+    "deleteConfirm": "This permanently deletes your account, maps, and Zotero connection.",
+    "deleteYes": "Delete permanently",
+    "deleteNo": "Cancel",
+    "deleting": "Deleting…",
+    "deleteError": "Could not delete the account."
   },
   "nav": {
     "logout": "Log out"

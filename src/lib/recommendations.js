@@ -31,16 +31,12 @@ async function fetchS2RecommendedDois(seedDois) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ positivePaperIds, negativePaperIds: [] }),
     });
-    if (!res.ok) {
-      console.log(`[recommendations] S2 recommendations ${res.status}`);
-      return [];
-    }
+    if (!res.ok) return [];
     const data = await res.json();
     return (data.recommendedPapers || [])
       .map((p) => p.externalIds?.DOI)
       .filter(Boolean);
-  } catch (e) {
-    console.log("[recommendations] S2 recommendations threw:", e?.message);
+  } catch {
     return [];
   }
 }
@@ -74,8 +70,7 @@ async function fetchTopicFallbackWorks(seedWorks, excludeIds, limit, filters) {
     if (!res.ok) return [];
     const data = await res.json();
     return (data.results || []).filter((w) => !excludeIds.has(shortId(w.id)));
-  } catch (e) {
-    console.log("[recommendations] OpenAlex topics fallback threw:", e?.message);
+  } catch {
     return [];
   }
 }
@@ -119,8 +114,8 @@ export async function findRelatedPapers(seedDois, excludeIds, limit = 20, filter
     try {
       const resolved = await fetchWorksByDois(recommendedDois);
       works = resolved.filter((w) => !excludeSet.has(shortId(w.id)) && passesFilters(w, filters));
-    } catch (e) {
-      console.log("[recommendations] resolving S2 DOIs via OpenAlex threw:", e?.message);
+    } catch {
+      // OpenAlex DOI lookup failed; the topic fallback below still runs.
     }
   }
 
@@ -137,8 +132,8 @@ export async function findRelatedPapers(seedDois, excludeIds, limit = 20, filter
           seenIds.add(w.id);
         }
       }
-    } catch (e) {
-      console.log("[recommendations] fetching seed works for topic fallback threw:", e?.message);
+    } catch {
+      // Seed lookup failed; return whatever recommendations were already resolved.
     }
   }
 
