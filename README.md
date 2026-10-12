@@ -35,15 +35,25 @@ npm run dev
 
 The app opens at `http://localhost:3000`. OpenAlex needs no key. For Mendeley, set `MENDELEY_CLIENT_ID` and `MENDELEY_CLIENT_SECRET` from an app whose redirect URL is `http://localhost:3000/api/mendeley/callback`. `OPENAI_API_KEY` and `SEMANTIC_SCHOLAR_API_KEY` are optional and only used for thematic clusters and abstract fallback.
 
-## What the map shows
+## What you see
 
-![OrbLit map view](screenshots/map_example.png)
+### Map
 
-Filled nodes are papers already in the collection. Outlined nodes are discovery papers around it. The horizontal axis is publication year, the vertical axis is citation count.
+![OrbLit map view](public/screenshots/examples_new/map.png)
 
-![OrbLit list view](screenshots/list_example.png)
+A collection plotted by publication year and citation count. Filled nodes are papers already in the library. Outlined nodes are related papers you have not saved yet, and the lines between them are citations. Click a node for the abstract, then add the paper to Zotero or Mendeley.
 
-The same papers are also available as a sortable list, and as thematic clusters.
+### Themes
+
+![OrbLit themes view](public/screenshots/examples_new/themes.png)
+
+The same papers grouped by what they are about, from title and abstract. Each color is one theme. Related papers can be suggested and then included in the clusters.
+
+### List
+
+![OrbLit list view](public/screenshots/examples_new/list.png)
+
+Every paper from the map as a filterable list, by title, DOI, year, tag, or whether it is already in the collection. A row opens the same detail panel, and can be shown on the map or written back to the library.
 
 ## Stack
 
