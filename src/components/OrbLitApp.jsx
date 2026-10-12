@@ -181,6 +181,7 @@ export default function App() {
   const [addingId, setAddingId] = useState(null);
 
   const svgRef = useRef(null);
+  const mapPaneRef = useRef(null);
   const dimsRef = useRef({ w: 900, h: defaultMapHeight() });
   const nodesRef = useRef([]);
   const linksRef = useRef([]);
@@ -556,26 +557,44 @@ export default function App() {
     }
   }
 
+  // The plot is laid out in pixel coordinates. An SVG with width="100%"
+  // often reports clientWidth 0 on first paint (especially WebKit), and the
+  // old fallback of 900px then drew the whole year axis into the left of a
+  // wider canvas. Measure the pane, which is a normal flex box.
+  function readPaneWidth() {
+    const pane = mapPaneRef.current?.getBoundingClientRect();
+    if (pane && pane.width > 1) return Math.round(pane.width);
+    const svg = svgRef.current?.getBoundingClientRect();
+    if (svg && svg.width > 1) return Math.round(svg.width);
+    return 0;
+  }
+
   useEffect(() => {
-    function measure() {
-      if (!svgRef.current) return;
-      const w = svgRef.current.clientWidth || 900;
+    const pane = mapPaneRef.current;
+    if (!pane) return;
+
+    function measure(forceLayout) {
+      const w = readPaneWidth();
+      if (!w) return;
+      const widthChanged = Math.abs(w - dimsRef.current.w) >= 1;
+      const heightChanged = Math.abs(mapHeight - dimsRef.current.h) >= 1;
       dimsRef.current.w = w;
       dimsRef.current.h = mapHeight;
       configureZoomExtents();
-      // Keep current view clamped to the new viewport — no empty margins
-      applyZoomTransform(transformRef.current);
-      if (mapMode === "collection" && nodesRef.current.length) {
+      if (mapMode === "collection" && nodesRef.current.length && (forceLayout || widthChanged || heightChanged)) {
         layoutCollectionMap();
         setTick((t) => t + 1);
-      } else if (simRef.current) {
+      } else if (mapMode !== "collection" && simRef.current && (forceLayout || widthChanged || heightChanged)) {
         simRef.current.force("center", d3.forceCenter(w / 2, mapHeight / 2));
         if (nodesRef.current.length) restart(0.4);
       }
+      if (widthChanged || heightChanged) applyZoomTransform(transformRef.current);
     }
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+
+    measure(true);
+    const observer = new ResizeObserver(() => measure(false));
+    observer.observe(pane);
+    return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapMode, logScale, mapHeight]);
 
@@ -653,6 +672,9 @@ export default function App() {
       axisRef.current = null;
       return;
     }
+    const measured = readPaneWidth();
+    if (measured) dimsRef.current.w = measured;
+    dimsRef.current.h = mapHeight;
     const w = dimsRef.current.w;
     const h = dimsRef.current.h;
     const years = nodes.map((n) => n.year).filter((y) => y != null);
@@ -1608,24 +1630,10 @@ export default function App() {
 
         if (mode === "collection") {
           if (simRef.current) simRef.current.stop();
-          // Keep saved positions if present; only rebuild scales/axes
-          if (nodesRef.current.every((n) => n.x == null || n.y == null)) {
-            layoutCollectionMap();
-          } else {
-            // Recompute axes from saved positions' year/cite domains
-            layoutCollectionMap();
-            // Restore exact saved coordinates after layout
-            const byId = new Map(data.nodes.map((n) => [n.id, n]));
-            nodesRef.current.forEach((n) => {
-              const saved = byId.get(n.id);
-              if (saved && saved.x != null && saved.y != null) {
-                n.x = saved.x;
-                n.y = saved.y;
-                n.fx = n.x;
-                n.fy = n.y;
-              }
-            });
-          }
+          // Year × citation positions for the pane's current size. Saved
+          // pixel coordinates are from the last window width and would
+          // leave the plot short of a wider canvas.
+          layoutCollectionMap();
         } else {
           axisRef.current = null;
           restart(1);
@@ -2042,6 +2050,7 @@ export default function App() {
       <div style={{ display: "flex", flex: 1, height: mapHeight + 12 }}>
         {/* Map view (kept mounted so zoom state persists) */}
         <div
+          ref={mapPaneRef}
           style={{
             position: "relative",
             flex: 1,
@@ -2211,7 +2220,7 @@ export default function App() {
             ref={svgRef}
             width="100%"
             height={mapHeight}
-            style={{ background: "#0B1220", display: "block", touchAction: "none", cursor: "grab", flex: "0 0 auto" }}
+            style={{ background: "#0B1220", display: "block", touchAction: "none", cursor: "grab", width: "100%", minWidth: 0, alignSelf: "stretch", flex: "0 0 auto" }}
           >
             <defs>
               <marker
