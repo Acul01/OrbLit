@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { getZoteroCredentials } from "@/lib/zotero-server";
 import { fetchZoteroCollections, createZoteroCollection } from "@/lib/zotero-client";
 import { readJson } from "@/lib/request-body";
@@ -9,10 +9,7 @@ import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 // used to restore the UI on page load without asking the user to re-enter
 // their API key every session.
 export async function GET() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -40,10 +37,7 @@ export async function GET() {
 // just that one paper, so the map still behaves like any other
 // Zotero-backed collection map afterwards, including Synchronize).
 export async function POST(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

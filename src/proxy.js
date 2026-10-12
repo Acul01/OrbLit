@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
+import { isLocalMode } from "@/lib/mode";
 
 // Next.js 16 renamed middleware.js -> proxy.js (same runtime, new file/
 // export name). This runs on every matched request and does two things:
@@ -26,6 +27,22 @@ function stripLocale(pathname) {
 
 export async function proxy(request) {
   const intlResponse = intlMiddleware(request);
+
+  if (isLocalMode()) {
+    const path = stripLocale(request.nextUrl.pathname);
+    if (
+      path === "/login" ||
+      path === "/signup" ||
+      path === "/account" ||
+      path === "/forgot-password" ||
+      path === "/reset-password"
+    ) {
+      const locale = request.nextUrl.pathname.split("/")[1];
+      const appPath = locale === "de" ? "/de/app" : "/app";
+      return NextResponse.redirect(new URL(appPath, request.url));
+    }
+    return intlResponse;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,

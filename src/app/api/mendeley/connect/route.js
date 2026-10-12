@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { safeNextPath } from "@/lib/safe-next";
 import { mendeleyAuthorizeUrl, mendeleyOAuthConfig, mendeleyRedirectUri } from "@/lib/mendeley-client";
 import {
@@ -16,10 +16,7 @@ export async function GET(request) {
   const returnTo = safeNextPath(url.searchParams.get("next"));
   const origin = url.origin;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     const login = new URL("/login", origin);
     login.searchParams.set("next", returnTo);

@@ -2,6 +2,7 @@ import OrbLitApp from "@/components/OrbLitApp";
 import UserMenu from "@/components/UserMenu";
 import FeedbackButton from "@/components/FeedbackButton";
 import RefAttacher from "@/components/RefAttacher";
+import { isLocalMode } from "@/lib/mode";
 
 const topRightBarStyle = {
   position: "fixed",
@@ -14,14 +15,15 @@ const topRightBarStyle = {
 };
 
 export default function AppPage() {
+  const localMode = isLocalMode();
   return (
     <>
-      <RefAttacher />
+      {localMode ? null : <RefAttacher />}
       <div style={topRightBarStyle}>
-        <FeedbackButton />
-        <UserMenu />
+        {localMode ? null : <FeedbackButton />}
+        {localMode ? null : <UserMenu />}
       </div>
-      <OrbLitApp />
+      <OrbLitApp localMode={localMode} />
     </>
   );
 }

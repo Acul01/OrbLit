@@ -1,11 +1,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isLocalMode } from "@/lib/mode";
 
 // Hourly counters in `api_rate_limits`, incremented by the
 // `bump_api_rate_limit` database function (migration 0008). A process-local
 // counter would reset on every serverless isolate, so the count lives in
 // Postgres. Fails closed: if the counter cannot be updated, the request
-// does not proceed.
+// does not proceed. Local runs skip the database counter.
 export async function assertWithinRateLimit(userId, route, limit) {
+  if (isLocalMode()) return;
   const admin = createAdminClient();
   const { data, error } = await admin.rpc("bump_api_rate_limit", {
     p_user: userId,

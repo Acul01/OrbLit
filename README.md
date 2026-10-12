@@ -1,37 +1,18 @@
-# OrbLit — Citation Explorer
+# OrbLit
 
-OrbLit is a free, open-source tool for literature discovery: search
-[OpenAlex](https://openalex.org) for papers, visualize citation networks, and
-sync with your [Zotero](https://www.zotero.org) library. It grew out of
-RefMap, a local-only citation map, and is rebuilt on Next.js with accounts
-and encrypted per-user Zotero credentials.
+OrbLit is a free, open-source citation map for the reference manager you already use. Connect [Zotero](https://www.zotero.org) or [Mendeley](https://www.mendeley.com), and OrbLit turns a collection into an interactive network: which papers cite each other, how they cluster by theme, and which related papers you have not saved yet. Search comes from [OpenAlex](https://openalex.org). Papers you find can be written back, PDF included.
 
 Licensed under the [MIT License](LICENSE).
 
-**Live at:** [orblit.io](https://orblit.io)
+## Two ways to use it
 
-**Source:** [github.com/Acul01/OrbLit](https://github.com/Acul01/OrbLit)
+### On the web
 
-## Screenshots
+Open [orblit.io](https://orblit.io) and sign in with Google or GitHub. Nothing to install. Your maps and your Zotero or Mendeley connection are stored with that account.
 
-### Map view
+### On your computer
 
-![OrbLit map view](screenshots/map_example.png)
-
-### List view
-
-![OrbLit list view](screenshots/list_example.png)
-
-## Stack
-
-- **Next.js 16** (App Router) on **Vercel**
-- **Supabase**: Postgres (`profiles`, `projects`, `zotero_credentials`,
-  all RLS-protected) + Auth
-- **next-intl**: English (default, unprefixed) and German (`/de/...`)
-- Zotero API calls are proxied server-side (`app/api/zotero/*`) — the
-  user's API key is encrypted (AES-256-GCM) and never reaches the browser
-
-## Local development
+Clone this repo and run it yourself. There is no account. Maps are saved as JSON files in `data/projects/` on your machine. This copy does not talk to orblit.io.
 
 ```bash
 git clone https://github.com/Acul01/OrbLit
@@ -40,57 +21,42 @@ npm install
 cp .env.example .env.local
 ```
 
-Fill in `.env.local` — you'll need a Supabase project (URL, anon key,
-service-role key) and a generated `ZOTERO_ENCRYPTION_KEY`
-(`openssl rand -base64 32`). Apply the database schema:
+In `.env.local` set `ORBLIT_MODE=local`. Optional Zotero keys, from [zotero.org/settings/keys](https://www.zotero.org/settings/keys):
 
 ```bash
-supabase link --project-ref <your-project-ref>
-supabase db push
+ORBLIT_MODE=local
+ZOTERO_USER_ID=
+ZOTERO_API_KEY=
 ```
 
 ```bash
 npm run dev
 ```
 
-Opens `http://localhost:3000`.
+The app opens at `http://localhost:3000`. OpenAlex needs no key. For Mendeley, set `MENDELEY_CLIENT_ID` and `MENDELEY_CLIENT_SECRET` from an app whose redirect URL is `http://localhost:3000/api/mendeley/callback`. `OPENAI_API_KEY` and `SEMANTIC_SCHOLAR_API_KEY` are optional and only used for thematic clusters and abstract fallback.
 
-## Usage
+## What the map shows
 
-- **Sign up** → the tool at `/app` is free, with no plan limits
-- **Zotero**: connect once (User ID + API key, from
-  [zotero.org/settings/keys](https://www.zotero.org/settings/keys)) — the
-  key is stored encrypted server-side, not re-entered per session
-- **Search**: enter a title/keyword → click a result to highlight it on the
-  current map (others dim)
-- **Click** a node: details in the sidebar. **Double-click**: expand the
-  network around that node. **Drag**: freely reposition nodes
-- **Monitor**: check again for new citing articles
-- **Zotero collection**: pick a collection (or main library) from the
-  toolbar dropdown — used for DOI sync and new papers
-- **Create Map**: builds a scatter map of the selected collection
-  (X = publication year, Y = total citations). **Filled** nodes are papers
-  in the collection; **outlined** nodes are discovery papers outside it
-  that cite or are cited by the collection. Custom **tags** (name + color)
-  can be assigned to papers. Node size reflects network degree
-- **Map / List**: switch between the scatter map and a filterable list
-- **Add to Zotero**: creates the paper (title, authors, DOI, abstract) as a
-  `journalArticle` in the selected collection
-- **Export/Import JSON**: your map (nodes, links, tags, view state)
-  autosaves to your account, but can also be exported/imported as a JSON
-  file for offline backup
+![OrbLit map view](screenshots/map_example.png)
 
-## Production build
+Filled nodes are papers already in the collection. Outlined nodes are discovery papers around it. The horizontal axis is publication year, the vertical axis is citation count.
+
+![OrbLit list view](screenshots/list_example.png)
+
+The same papers are also available as a sortable list, and as thematic clusters.
+
+## Stack
+
+- **Next.js 16** (App Router)
+- **Supabase** for accounts and saved maps on [orblit.io](https://orblit.io). A local run (`ORBLIT_MODE=local`) stores maps as JSON instead
+- **next-intl** for English and German (`/de`)
+- Zotero and Mendeley are called from the server. On orblit.io, keys and tokens are encrypted with AES-256-GCM and are not stored in the browser. A local run keeps them in `.env.local` and `data/` on that machine
+
+The schema in `supabase/migrations/` is for the hosted app. A local run does not need it.
+
+A production build of your own copy:
 
 ```bash
 npm run build
 npm run start
 ```
-
-## Notes
-
-- Your map, tags, and Zotero DOI cache autosave to Supabase
-  (`projects` table) — no local storage dependency
-- OpenAlex calls happen client-side (public API, no auth needed); Zotero
-  calls happen server-side only
-- See `supabase/migrations/` for the full schema and RLS policies

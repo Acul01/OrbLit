@@ -5,9 +5,18 @@ import { encrypt } from "@/lib/crypto";
 import { assertZoteroUserId, fetchZoteroCollections } from "@/lib/zotero-client";
 import { readJson } from "@/lib/request-body";
 import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { isLocalMode } from "@/lib/mode";
+import { disconnectLocalZotero, readLocalZotero, writeLocalZotero } from "@/lib/local-store";
 
 // GET: connection status only — never returns the key.
 export async function GET() {
+  if (isLocalMode()) {
+    const creds = await readLocalZotero();
+    return NextResponse.json({
+      connected: !!creds,
+      zoteroUserId: creds?.zoteroUserId || "",
+    });
+  }
   const supabase = await createClient();
   const {
     data: { user },
@@ -33,6 +42,7 @@ export async function GET() {
 // the collection list "for free"), then encrypt + store the key. The
 // plaintext key exists only for the duration of this request.
 export async function POST(request) {
+  if (isLocalMode()) return saveLocalZotero(request);
   const supabase = await createClient();
   const {
     data: { user },
@@ -107,6 +117,10 @@ export async function POST(request) {
 
 // DELETE: disconnect Zotero (removes the stored key).
 export async function DELETE() {
+  if (isLocalMode()) {
+    await disconnectLocalZotero();
+    return NextResponse.json({ disconnected: true });
+  }
   const supabase = await createClient();
   const {
     data: { user },
@@ -118,4 +132,38 @@ export async function DELETE() {
   const admin = createAdminClient();
   await admin.from("zotero_credentials").delete().eq("user_id", user.id);
   return NextResponse.json({ disconnected: true });
+}
+
+async function saveLocalZotero(request) {
+  const body = await readJson(request).catch((error) => {
+    if (error?.status === 413) return { __tooLarge: true };
+    return {};
+  });
+  if (body.__tooLarge) {
+    return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+  }
+  const { zoteroUserId, zoteroApiKey } = body;
+  if (!zoteroUserId?.trim() || !zoteroApiKey?.trim()) {
+    return NextResponse.json({ error: "User ID and API key are required" }, { status: 400 });
+  }
+  if (zoteroApiKey.trim().length > 64) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+  let zoteroId;
+  try {
+    zoteroId = assertZoteroUserId(zoteroUserId.trim());
+  } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+  let collections;
+  try {
+    collections = await fetchZoteroCollections(zoteroId, zoteroApiKey.trim());
+  } catch {
+    return NextResponse.json(
+      { error: "Connection failed. Check User ID and API key." },
+      { status: 400 }
+    );
+  }
+  await writeLocalZotero(zoteroId, zoteroApiKey.trim());
+  return NextResponse.json({ collections });
 }

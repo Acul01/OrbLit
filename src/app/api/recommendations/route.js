@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { findRelatedPapers } from "@/lib/recommendations";
 import { readJson } from "@/lib/request-body";
 import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
@@ -26,10 +26,7 @@ function optionalInt(value) {
 // omitted means unbounded on that side.
 //
 export async function POST(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

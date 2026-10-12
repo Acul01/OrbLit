@@ -1,11 +1,13 @@
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isLocalMode } from "@/lib/mode";
 
 // Auth guard only. proxy.js already redirects unauthenticated requests
 // before they get here (cheap cookie check); this is the authoritative
-// server-side check.
+// server-side check. A local run has no account.
 export default async function AppLayout({ children }) {
+  if (isLocalMode()) return children;
   const locale = await getLocale();
   const supabase = await createClient();
   const {

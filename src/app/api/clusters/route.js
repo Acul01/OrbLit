@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmbeddings } from "@/lib/embeddings";
 import { clusterVectors, projectTo2D } from "@/lib/clustering";
@@ -8,6 +8,7 @@ import { mapPool } from "@/lib/citation-graph";
 import { isOpenAlexWorkId } from "@/lib/openalex";
 import { readJson } from "@/lib/request-body";
 import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { isLocalMode } from "@/lib/mode";
 
 const MAX_PAPERS = 300;
 const MAX_TITLE = 500;
@@ -26,10 +27,7 @@ const MAX_ABSTRACT = 8000;
 // store them on the node permanently (avoids re-fetching the same paper's
 // abstract on a future Generate).
 export async function POST(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -92,7 +90,7 @@ export async function POST(request) {
     );
   }
 
-  const admin = createAdminClient();
+  const admin = isLocalMode() ? null : createAdminClient();
 
   let vectorsById;
   try {

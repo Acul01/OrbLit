@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isLocalMode } from "@/lib/mode";
+import { disconnectLocalMendeley, readLocalMendeley } from "@/lib/local-store";
 
 // GET: connection status only — never returns tokens.
 export async function GET() {
+  if (isLocalMode()) {
+    const stored = await readLocalMendeley();
+    return NextResponse.json({
+      connected: !!stored,
+      profileId: stored?.profileId || "",
+    });
+  }
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,6 +36,10 @@ export async function GET() {
 
 // DELETE: disconnect Mendeley (removes the stored tokens).
 export async function DELETE() {
+  if (isLocalMode()) {
+    await disconnectLocalMendeley();
+    return NextResponse.json({ disconnected: true });
+  }
   const supabase = await createClient();
   const {
     data: { user },

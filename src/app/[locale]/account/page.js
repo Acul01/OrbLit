@@ -3,10 +3,12 @@ import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import BackToHomeLink from "@/components/BackToHomeLink";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
+import { isLocalMode } from "@/lib/mode";
 
 export default async function AccountPage() {
-  const t = await getTranslations("account");
   const locale = await getLocale();
+  if (isLocalMode()) redirect({ href: "/app", locale });
+  const t = await getTranslations("account");
   const supabase = await createClient();
   const {
     data: { user },

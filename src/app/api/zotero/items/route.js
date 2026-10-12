@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { getZoteroCredentials } from "@/lib/zotero-server";
 import {
   fetchAllZoteroItems,
@@ -18,10 +18,7 @@ import { assertWithinRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 // GET ?collectionKey=... — full (paginated) item list for DOI sync /
 // collection-map building. collectionKey omitted or "" = main library.
 export async function GET(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -57,10 +54,7 @@ export async function GET(request) {
 // A missing/failed PDF never fails the request: the metadata item is the
 // important part, the PDF is a best-effort bonus.
 export async function POST(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

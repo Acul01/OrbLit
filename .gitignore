@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local mode maps and library keys (ORBLIT_MODE=local)
+/data
+
 # vercel
 .vercel
 

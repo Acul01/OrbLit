@@ -36,11 +36,15 @@ export async function getEmbeddings(admin, papers) {
   const ids = prepared.map((row) => row.paper.id);
   const vectors = new Map();
 
-  const { data: cached } = await admin
-    .from("paper_embeddings")
-    .select("work_id, content_hash, embedding")
-    .in("work_id", ids)
-    .eq("model", MODEL);
+  let cached = [];
+  if (admin) {
+    const result = await admin
+      .from("paper_embeddings")
+      .select("work_id, content_hash, embedding")
+      .in("work_id", ids)
+      .eq("model", MODEL);
+    cached = result.data;
+  }
 
   const wanted = new Map(prepared.map((row) => [row.paper.id, row.hash]));
   for (const row of cached || []) {
@@ -84,9 +88,11 @@ export async function getEmbeddings(admin, papers) {
 
     // Best-effort cache write — a failure here shouldn't break the
     // request, it just means we re-embed this paper next time.
-    await admin
-      .from("paper_embeddings")
-      .upsert(rowsToCache, { onConflict: "work_id,model,content_hash" });
+    if (admin) {
+      await admin
+        .from("paper_embeddings")
+        .upsert(rowsToCache, { onConflict: "work_id,model,content_hash" });
+    }
   }
 
   return vectors;

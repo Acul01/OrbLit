@@ -57,7 +57,7 @@ import NewMapCard from "@/components/NewMapCard";
 import FiltersPanel from "@/components/FiltersPanel";
 import ClusterMap from "@/components/ClusterMap";
 
-export default function App() {
+export default function App({ localMode = false }) {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -124,7 +124,7 @@ export default function App() {
     setActiveProjectId,
     scheduleSave,
     flushSave,
-  } = useProject();
+  } = useProject(localMode);
   const autosave = () => scheduleSave(buildProjectPayload);
   const [projects, setProjects] = useState([]);
   const [activeProjectId, setActiveProjectIdState] = useState(null);

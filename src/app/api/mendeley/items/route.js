@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import {
   attachPdfToMendeley,
   createMendeleyItem,
@@ -18,10 +18,7 @@ import { assertWithinRateLimit } from "@/lib/rate-limit";
 // GET ?collectionKey=... — DOI list for a folder, or the whole library
 // when collectionKey is omitted. Same item shape as /api/zotero/items.
 export async function GET(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -51,10 +48,7 @@ export async function GET(request) {
 // the folder when one is selected, then attaches an open-access PDF when
 // OpenAlex has one. A missing PDF does not fail the request.
 export async function POST(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

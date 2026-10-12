@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { createMendeleyFolder, fetchMendeleyFolders } from "@/lib/mendeley-client";
 import { getMendeleyAccess, mendeleyErrorResponse } from "@/lib/mendeley-server";
 import { readJson } from "@/lib/request-body";
 import { assertWithinRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -35,10 +32,7 @@ export async function GET() {
 
 // POST { name } — creates a folder, used when a map starts from one paper.
 export async function POST(request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { getRequestUser } from "@/lib/request-user";
 import { assertWithinRateLimit } from "@/lib/rate-limit";
 import {
   exchangeMendeleyCode,
@@ -39,10 +39,7 @@ export async function GET(request) {
     return finish(origin, returnTo, "failed");
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getRequestUser();
   if (!user) return finish(origin, returnTo, "failed");
 
   const config = mendeleyOAuthConfig();

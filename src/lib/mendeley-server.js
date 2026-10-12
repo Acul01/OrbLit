@@ -1,6 +1,8 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { mendeleyOAuthConfig, refreshMendeleyToken } from "@/lib/mendeley-client";
+import { isLocalMode } from "@/lib/mode";
+import { readLocalMendeley, writeLocalMendeley } from "@/lib/local-store";
 import { safeNextPath } from "@/lib/safe-next";
 import { rateLimitResponse } from "@/lib/rate-limit";
 
@@ -45,6 +47,15 @@ function expiresAtFrom(expiresIn) {
 }
 
 export async function saveMendeleyTokens(userId, { profileId, accessToken, refreshToken, expiresIn }) {
+  if (isLocalMode()) {
+    await writeLocalMendeley({
+      profileId: profileId || null,
+      accessToken,
+      refreshToken,
+      expiresAt: expiresAtFrom(expiresIn),
+    });
+    return;
+  }
   const admin = createAdminClient();
   const { error } = await admin.from("mendeley_credentials").upsert(
     {
@@ -61,7 +72,35 @@ export async function saveMendeleyTokens(userId, { profileId, accessToken, refre
 
 // Returns a usable access token, refreshing and rewriting the row when
 // the stored one is inside the skew window. Null if Mendeley is not connected.
+async function getLocalMendeleyAccess() {
+  const stored = await readLocalMendeley();
+  if (!stored) return null;
+  const expiresAt = new Date(stored.expiresAt).getTime();
+  if (stored.accessToken && Number.isFinite(expiresAt) && expiresAt > Date.now() + REFRESH_SKEW_MS) {
+    return { accessToken: stored.accessToken, profileId: stored.profileId || "" };
+  }
+  const config = mendeleyOAuthConfig();
+  if (!config) {
+    const missing = new Error("Mendeley is not configured");
+    missing.code = "MENDELEY_CONFIG";
+    throw missing;
+  }
+  const tokens = await refreshMendeleyToken({
+    clientId: config.clientId,
+    clientSecret: config.clientSecret,
+    refreshToken: stored.refreshToken,
+  });
+  await saveMendeleyTokens("local", {
+    profileId: stored.profileId,
+    accessToken: tokens.access_token,
+    refreshToken: tokens.refresh_token || stored.refreshToken,
+    expiresIn: tokens.expires_in,
+  });
+  return { accessToken: tokens.access_token, profileId: stored.profileId || "" };
+}
+
 export async function getMendeleyAccess(userId) {
+  if (isLocalMode()) return getLocalMendeleyAccess();
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("mendeley_credentials")
