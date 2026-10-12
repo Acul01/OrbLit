@@ -15,19 +15,19 @@ const content = {
   en: {
     title: "OrbLit vs. Litmaps, ResearchRabbit & Connected Papers",
     description:
-      "Comparing OrbLit against Litmaps, ResearchRabbit, and Connected Papers — a free open-source tool, Zotero sync, thematic clusters, and honest trade-offs.",
+      "Comparing OrbLit against Litmaps, ResearchRabbit, and Connected Papers — a free open-source tool, Zotero and Mendeley sync, thematic clusters, and honest trade-offs.",
     h1: "OrbLit vs. other citation mapping tools",
     intro: "Honest, side-by-side comparisons — including where the other tool is actually the better fit.",
     cards: [
       {
         href: "/compare/litmaps-alternative",
         title: "OrbLit vs. Litmaps",
-        body: "OrbLit is free and open source. Zotero Sync is Pro-only on Litmaps and included in OrbLit, and the tools use different data sources.",
+        body: "OrbLit is free and open source. Two-way sync with Zotero and Mendeley is included; Litmaps keeps Zotero Sync on Pro.",
       },
       {
         href: "/compare/researchrabbit-alternative",
         title: "OrbLit vs. ResearchRabbit",
-        body: "Free-forever collaboration vs. two-way Zotero sync — the two tools optimize for different things.",
+        body: "Free-forever collaboration vs. two-way sync with Zotero and Mendeley — the two tools optimize for different things.",
       },
       {
         href: "/compare/connected-papers-alternative",
@@ -35,25 +35,25 @@ const content = {
         body: "One persistent collection map vs. a fresh graph per origin paper.",
       },
     ],
-    useCaseLabel: "Not comparing tools? See how OrbLit works with your Zotero library →",
+    useCaseLabel: "Not comparing tools? See how OrbLit works with Zotero and Mendeley →",
     useCaseHref: "/zotero-citation-map",
   },
   de: {
     title: "OrbLit vs. Litmaps, ResearchRabbit & Connected Papers",
     description:
-      "OrbLit im Vergleich zu Litmaps, ResearchRabbit und Connected Papers — kostenlos und Open Source, Zotero-Sync, thematische Cluster und ehrliche Abwägungen.",
+      "OrbLit im Vergleich zu Litmaps, ResearchRabbit und Connected Papers — kostenlos und Open Source, Sync mit Zotero und Mendeley, thematische Cluster und ehrliche Abwägungen.",
     h1: "OrbLit im Vergleich zu anderen Citation-Mapping-Tools",
     intro: "Ehrliche Vergleiche — auch dort, wo das andere Tool tatsächlich die bessere Wahl ist.",
     cards: [
       {
         href: "/compare/litmaps-alternative",
         title: "OrbLit vs. Litmaps",
-        body: "OrbLit ist kostenlos und Open Source. Zotero Sync ist bei Litmaps nur in Pro, bei OrbLit enthalten — die Datenquellen unterscheiden sich.",
+        body: "OrbLit ist kostenlos und Open Source. Der Zwei-Wege-Sync mit Zotero und Mendeley ist enthalten; bei Litmaps bleibt Zotero Sync im Pro-Tarif.",
       },
       {
         href: "/compare/researchrabbit-alternative",
         title: "OrbLit vs. ResearchRabbit",
-        body: "Kostenlose Kollaboration vs. Zwei-Wege-Zotero-Sync — beide Tools setzen unterschiedliche Prioritäten.",
+        body: "Kostenlose Kollaboration vs. Zwei-Wege-Sync mit Zotero und Mendeley — beide Tools setzen unterschiedliche Prioritäten.",
       },
       {
         href: "/compare/connected-papers-alternative",
@@ -61,7 +61,7 @@ const content = {
         body: "Eine durchgehende Sammlungskarte vs. ein neuer Graph pro Startpaper.",
       },
     ],
-    useCaseLabel: "Kein Tool-Vergleich gesucht? So funktioniert OrbLit mit deiner Zotero-Bibliothek →",
+    useCaseLabel: "Kein Tool-Vergleich gesucht? So funktioniert OrbLit mit Zotero und Mendeley →",
     useCaseHref: "/zotero-citation-map",
   },
 };

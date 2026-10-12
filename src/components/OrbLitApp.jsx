@@ -2547,7 +2547,7 @@ export default function App() {
           <div style={{ flex: 1, overflowY: "auto", minHeight: mapHeight - 80 }}>
             {nodesRef.current.length === 0 ? (
               <div style={{ padding: 24, color: "#7C8AA3", fontSize: 13 }}>
-                No papers on the map yet. Create a map from a Zotero collection first.
+                No papers on the map yet. Create a map from a Zotero or Mendeley collection first.
               </div>
             ) : (
               getFilteredListNodes().map((n) => {
@@ -2750,7 +2750,7 @@ export default function App() {
           {!selected && nodesRef.current.length === 0 && (
             <div style={{ color: "#7C8AA3", lineHeight: 1.6 }}>
               <BookOpen size={18} style={{ marginBottom: 8 }} />
-              <p>Search above for an article, or connect Zotero and click Create Map for a collection overview.</p>
+              <p>Search above for an article, or connect Zotero or Mendeley and click Create Map for a collection overview.</p>
               <p style={{ marginTop: 10 }}>Click = details · Double-click = expand · Scroll = zoom</p>
             </div>
           )}

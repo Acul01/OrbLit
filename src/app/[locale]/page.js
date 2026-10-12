@@ -14,12 +14,12 @@ import { GITHUB_URL } from "@/lib/seo";
 export const metadata = {
   title: "OrbLit",
   description:
-    "Search OpenAlex, visualize citation networks, and sync with your Zotero library.",
+    "Search OpenAlex, visualize citation networks, and sync with Zotero or Mendeley.",
   openGraph: {
     siteName: "OrbLit",
     title: "OrbLit",
     description:
-      "Search OpenAlex, visualize citation networks, and sync with your Zotero library.",
+      "Search OpenAlex, visualize citation networks, and sync with Zotero or Mendeley.",
     url: "https://orblit.io",
     type: "website",
   },

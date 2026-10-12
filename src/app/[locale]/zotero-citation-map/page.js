@@ -9,24 +9,24 @@ const PATH = "/zotero-citation-map";
 
 const content = {
   en: {
-    title: "Zotero Citation Map — Visualize Your Library | OrbLit",
+    title: "Citation Map for Zotero and Mendeley | OrbLit",
     description:
-      "Turn your Zotero library into an interactive citation network — connect once, see how your papers cite each other, and discover what's missing.",
-    h1: "Turn your Zotero library into a citation map",
+      "Turn a Zotero or Mendeley library into an interactive citation network — connect once, see how your papers cite each other, and discover what's missing.",
+    h1: "Turn your reference manager into a citation map",
     intro:
-      "Your Zotero library grows one saved paper at a time, but Zotero itself never shows you how those papers actually relate to each other. OrbLit connects to your library and builds that picture — a citation network, thematic clusters, and related papers you haven't collected yet.",
+      "A library in Zotero or Mendeley grows one saved paper at a time, but neither tool shows how those papers actually relate to each other. OrbLit connects to both and builds that picture — a citation network, thematic clusters, and related papers you haven't collected yet.",
     problemTitle: "The problem: a library that keeps growing, but stays flat",
     problemBody:
-      "A folder full of PDFs and a flat list of references doesn't tell you which papers are foundational, which cite each other, or where the gaps in your reading are. That structure exists — Zotero just doesn't surface it.",
+      "A folder full of PDFs and a flat list of references doesn't tell you which papers are foundational, which cite each other, or where the gaps in your reading are. That structure exists — a reference manager just doesn't surface it.",
     solutionTitle: "The solution: a map built directly from your collection",
     solutionBody:
-      "OrbLit reads your Zotero library (or a single collection within it) and turns it into an interactive citation network: which papers reference which, clustered by theme, with related papers OpenAlex knows about that aren't in your library yet — all without leaving your existing Zotero workflow.",
+      "OrbLit reads your Zotero library or Mendeley folder and turns it into an interactive citation network: which papers reference which, clustered by theme, with related papers OpenAlex knows about that aren't in your library yet — without leaving the reference manager you already use.",
     stepsTitle: "How it works",
     steps: [
-      "Connect your Zotero library — takes one API key, no software to install.",
+      "Connect Zotero with an API key, or sign in to Mendeley. No extra software to install.",
       "OrbLit builds a citation network from your collection via OpenAlex.",
       "Explore thematic clusters and papers related to your collection that you haven't collected yet.",
-      "Add anything useful straight back to Zotero, PDF included — no manual export/import round-trip.",
+      "Add anything useful straight back to Zotero or Mendeley, PDF included — no manual export/import round-trip.",
     ],
     screenshotCaption:
       "OrbLit's citation network map — filled nodes are papers already in your collection, outlined nodes are discovery papers found around it.",
@@ -41,24 +41,24 @@ const content = {
     ],
   },
   de: {
-    title: "Zotero Citation Map — Bibliothek visualisieren | OrbLit",
+    title: "Citation Map für Zotero und Mendeley | OrbLit",
     description:
-      "Verwandle deine Zotero-Bibliothek in ein interaktives Zitationsnetzwerk — einmal verbinden, sehen wie deine Paper zusammenhängen, Lücken entdecken.",
-    h1: "Verwandle deine Zotero-Bibliothek in eine Citation Map",
+      "Verwandle eine Zotero- oder Mendeley-Bibliothek in ein interaktives Zitationsnetzwerk — einmal verbinden, sehen wie deine Paper zusammenhängen, Lücken entdecken.",
+    h1: "Verwandle deine Literaturverwaltung in eine Citation Map",
     intro:
-      "Deine Zotero-Bibliothek wächst mit jedem gespeicherten Paper, aber Zotero selbst zeigt nie, wie diese Paper tatsächlich zusammenhängen. OrbLit verbindet sich mit deiner Bibliothek und macht genau das sichtbar — ein Zitationsnetzwerk, thematische Cluster und verwandte Paper, die du noch nicht gesammelt hast.",
+      "Eine Bibliothek in Zotero oder Mendeley wächst mit jedem gespeicherten Paper, aber keines der beiden Tools zeigt, wie diese Paper tatsächlich zusammenhängen. OrbLit verbindet sich mit beiden und macht genau das sichtbar — ein Zitationsnetzwerk, thematische Cluster und verwandte Paper, die du noch nicht gesammelt hast.",
     problemTitle: "Das Problem: eine Bibliothek, die wächst, aber flach bleibt",
     problemBody:
-      "Ein Ordner voller PDFs und eine flache Liste von Referenzen zeigt nicht, welche Paper grundlegend sind, welche sich gegenseitig zitieren oder wo Lücken in der eigenen Recherche liegen. Diese Struktur existiert — Zotero macht sie nur nicht sichtbar.",
+      "Ein Ordner voller PDFs und eine flache Liste von Referenzen zeigt nicht, welche Paper grundlegend sind, welche sich gegenseitig zitieren oder wo Lücken in der eigenen Recherche liegen. Diese Struktur existiert — eine Literaturverwaltung macht sie nur nicht sichtbar.",
     solutionTitle: "Die Lösung: eine Karte direkt aus deiner Sammlung",
     solutionBody:
-      "OrbLit liest deine Zotero-Bibliothek (oder eine einzelne Sammlung darin) und macht daraus ein interaktives Zitationsnetzwerk: welche Paper welche referenzieren, nach Thema geclustert, mit verwandten Papern, die OpenAlex kennt und die noch nicht in deiner Bibliothek sind — ohne deinen bestehenden Zotero-Workflow zu verlassen.",
+      "OrbLit liest deine Zotero-Bibliothek oder einen Mendeley-Ordner und macht daraus ein interaktives Zitationsnetzwerk: welche Paper welche referenzieren, nach Thema geclustert, mit verwandten Papern, die OpenAlex kennt und die noch nicht in deiner Bibliothek sind — ohne die Literaturverwaltung zu verlassen, die du schon nutzt.",
     stepsTitle: "So funktioniert's",
     steps: [
-      "Zotero-Bibliothek verbinden — ein API-Key genügt, keine Software zu installieren.",
+      "Zotero mit einem API-Key verbinden oder bei Mendeley anmelden. Keine zusätzliche Software.",
       "OrbLit baut aus deiner Sammlung ein Zitationsnetzwerk über OpenAlex auf.",
       "Thematische Cluster erkunden und verwandte Paper entdecken, die du noch nicht gesammelt hast.",
-      "Alles Nützliche direkt zurück zu Zotero hinzufügen, inklusive PDF — ohne manuellen Export-/Import-Umweg.",
+      "Alles Nützliche direkt zurück zu Zotero oder Mendeley hinzufügen, inklusive PDF — ohne manuellen Export-/Import-Umweg.",
     ],
     screenshotCaption:
       "OrbLits Zitationsnetzwerk-Karte — gefüllte Punkte sind Paper, die schon in deiner Sammlung sind, Umrisse sind Entdeckungs-Paper drumherum.",

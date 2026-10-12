@@ -10,10 +10,10 @@ const content = {
   en: {
     title: "ResearchRabbit Alternative: OrbLit vs. ResearchRabbit",
     description:
-      "Comparing OrbLit and ResearchRabbit: a free open-source tool, Zotero sync direction, thematic clusters, and collaboration — an honest side-by-side.",
-    h1: "OrbLit vs. ResearchRabbit — two-way Zotero sync vs. free-forever collaboration",
+      "Comparing OrbLit and ResearchRabbit: a free open-source tool, Zotero and Mendeley sync, thematic clusters, and collaboration — an honest side-by-side.",
+    h1: "OrbLit vs. ResearchRabbit — two-way reference manager sync vs. free-forever collaboration",
     intro:
-      "This page compares OrbLit and ResearchRabbit for anyone deciding between the two. ResearchRabbit is free with no real cap on core use, and OrbLit is free and open source. The real trade-off isn't price — it's how each tool connects to Zotero and whether you need to collaborate with others.",
+      "This page compares OrbLit and ResearchRabbit for anyone deciding between the two. ResearchRabbit is free with no real cap on core use, and OrbLit is free and open source. The real trade-off isn't price — it's how each tool connects to a reference manager, and whether you need to collaborate with others. OrbLit syncs both ways with Zotero and Mendeley.",
     tableTitle: "Feature comparison",
     competitorLabel: "ResearchRabbit",
     tableRows: [
@@ -23,9 +23,9 @@ const content = {
         competitor: "Free Forever (unlimited searches/collections, 50 seed papers/search) · RR+ from ~$10/mo",
       },
       {
-        label: "Zotero sync",
-        orblit: "Import a whole collection + add papers back to Zotero (incl. PDF), one click",
-        competitor: "One-way import only (Zotero Importer); true two-way sync is, per their own docs, still in development",
+        label: "Reference manager sync",
+        orblit: "Import a whole collection from Zotero or Mendeley and add papers back (incl. PDF), one click",
+        competitor: "One-way Zotero import only (Zotero Importer); true two-way sync is, per their own docs, still in development",
       },
       {
         label: "Thematic clusters",
@@ -56,8 +56,8 @@ const content = {
     ],
     orblitBetterTitle: "When OrbLit is the better choice",
     orblitBetterPoints: [
-      "OrbLit's Zotero integration already goes both ways — import a whole collection and add papers straight back into Zotero (with the PDF). ResearchRabbit's Zotero Importer is currently one-way only; a real two-way sync is, per their own docs, still in development.",
-      "Build the map directly from a Zotero collection you already have, instead of hand-picking or searching for seed papers.",
+      "OrbLit already syncs both ways with Zotero and Mendeley — import a whole collection and add papers straight back (with the PDF). ResearchRabbit's Zotero Importer is currently one-way only; a real two-way sync is, per their own docs, still in development.",
+      "Build the map directly from a Zotero collection or Mendeley folder you already have, instead of hand-picking or searching for seed papers.",
       "Thematic clusters live in their own dedicated map view, not just an implicit layout inside the citation network.",
     ],
     screenshotCaption:
@@ -69,16 +69,16 @@ const content = {
       { href: "/compare", label: "All comparisons" },
       { href: "/compare/litmaps-alternative", label: "OrbLit vs. Litmaps" },
       { href: "/compare/connected-papers-alternative", label: "OrbLit vs. Connected Papers" },
-      { href: "/zotero-citation-map", label: "Citation maps from your Zotero library" },
+      { href: "/zotero-citation-map", label: "Citation maps for Zotero and Mendeley" },
     ],
   },
   de: {
     title: "ResearchRabbit Alternative: OrbLit im Vergleich",
     description:
-      "OrbLit vs. ResearchRabbit im Vergleich: ein kostenloses Open-Source-Tool, Zotero-Sync-Richtung, thematische Cluster und Kollaboration — ehrlich gegenübergestellt.",
-    h1: "OrbLit vs. ResearchRabbit — Zwei-Wege-Zotero-Sync vs. kostenlose Kollaboration",
+      "OrbLit vs. ResearchRabbit im Vergleich: ein kostenloses Open-Source-Tool, Sync mit Zotero und Mendeley, thematische Cluster und Kollaboration — ehrlich gegenübergestellt.",
+    h1: "OrbLit vs. ResearchRabbit — Zwei-Wege-Sync der Literaturverwaltung vs. kostenlose Kollaboration",
     intro:
-      "Diese Seite vergleicht OrbLit und ResearchRabbit für alle, die zwischen beiden Tools entscheiden. ResearchRabbit ist kostenlos ohne echte Obergrenze bei den Kernfunktionen, OrbLit ist kostenlos und Open Source. Der eigentliche Unterschied liegt nicht im Preis, sondern darin, wie beide Tools mit Zotero verbunden sind und ob Kollaboration gebraucht wird.",
+      "Diese Seite vergleicht OrbLit und ResearchRabbit für alle, die zwischen beiden Tools entscheiden. ResearchRabbit ist kostenlos ohne echte Obergrenze bei den Kernfunktionen, OrbLit ist kostenlos und Open Source. Der eigentliche Unterschied liegt nicht im Preis, sondern darin, wie beide Tools an die Literaturverwaltung angebunden sind und ob Kollaboration gebraucht wird. OrbLit synchronisiert in beide Richtungen mit Zotero und Mendeley.",
     tableTitle: "Im Vergleich",
     competitorLabel: "ResearchRabbit",
     tableRows: [
@@ -88,9 +88,9 @@ const content = {
         competitor: "Free Forever (unbegrenzte Suchen/Collections, 50 Seed-Paper/Suche) · RR+ ab ca. $10/Monat",
       },
       {
-        label: "Zotero-Sync",
-        orblit: "Ganze Sammlung importieren + Paper zurück zu Zotero hinzufügen (inkl. PDF), ein Klick",
-        competitor: "Nur Einbahnstraßen-Import (Zotero Importer); echter Zwei-Wege-Sync ist laut eigenen Angaben noch in Entwicklung",
+        label: "Literaturverwaltung",
+        orblit: "Ganze Sammlung aus Zotero oder Mendeley importieren und Paper zurückschreiben (inkl. PDF), ein Klick",
+        competitor: "Nur Einbahnstraßen-Import aus Zotero (Zotero Importer); echter Zwei-Wege-Sync ist laut eigenen Angaben noch in Entwicklung",
       },
       {
         label: "Thematische Cluster",
@@ -121,8 +121,8 @@ const content = {
     ],
     orblitBetterTitle: "Wann OrbLit die bessere Wahl ist",
     orblitBetterPoints: [
-      "OrbLits Zotero-Anbindung funktioniert bereits in beide Richtungen — ganze Sammlung importieren und Paper direkt aus der Karte zurück zu Zotero hinzufügen (inkl. PDF). ResearchRabbits Zotero Importer ist aktuell nur eine Einbahnstraße; echter Zwei-Wege-Sync ist laut eigenen Angaben noch in Entwicklung.",
-      "Die Karte lässt sich direkt aus einer bestehenden Zotero-Sammlung aufbauen, statt Seed-Paper einzeln auszuwählen oder zu suchen.",
+      "OrbLit synchronisiert bereits in beide Richtungen mit Zotero und Mendeley — ganze Sammlung importieren und Paper direkt aus der Karte zurückschreiben (inkl. PDF). ResearchRabbits Zotero Importer ist aktuell nur eine Einbahnstraße; echter Zwei-Wege-Sync ist laut eigenen Angaben noch in Entwicklung.",
+      "Die Karte lässt sich direkt aus einer bestehenden Zotero-Sammlung oder einem Mendeley-Ordner aufbauen, statt Seed-Paper einzeln auszuwählen oder zu suchen.",
       "Thematische Cluster haben eine eigene Kartenansicht, nicht nur ein implizites Layout innerhalb des Zitationsnetzwerks.",
     ],
     screenshotCaption:
@@ -134,7 +134,7 @@ const content = {
       { href: "/compare", label: "Alle Vergleiche" },
       { href: "/compare/litmaps-alternative", label: "OrbLit vs. Litmaps" },
       { href: "/compare/connected-papers-alternative", label: "OrbLit vs. Connected Papers" },
-      { href: "/zotero-citation-map", label: "Citation Maps aus deiner Zotero-Bibliothek" },
+      { href: "/zotero-citation-map", label: "Citation Maps für Zotero und Mendeley" },
     ],
   },
 };

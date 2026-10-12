@@ -5,8 +5,8 @@
       "signup": "Sign up"
     },
     "hero": {
-      "title": "The citation map that lives in your Zotero library.",
-      "tagline": "OrbLit syncs directly with Zotero, finds thematic clusters in your literature, and surfaces related papers your citations alone would never show you. Free to use, and open source.",
+      "title": "The citation map that lives in your reference manager.",
+      "tagline": "OrbLit syncs with Zotero and Mendeley, finds thematic clusters in your literature, and surfaces related papers your citations alone would never show you. Free to use, and open source.",
       "ctaPrimary": "Start for free",
       "ctaSecondary": "View on GitHub"
     },
@@ -21,8 +21,8 @@
         "body": "Citations and references become a network of knowledge ready to explore - drag, expand, and zoom to see how work connects."
       },
       "zotero": {
-        "title": "Sync with Zotero",
-        "body": "Connect your library once, then keep it in sync with one click - new papers, DOI matches, and additions get pulled in."
+        "title": "Sync with your reference manager",
+        "body": "Connect Zotero or Mendeley once, then keep the library in sync with one click — new papers, DOI matches, and additions get pulled in."
       },
       "tags": {
         "title": "Tag & organize",
@@ -48,8 +48,8 @@
         "body": "Find papers that are thematically close to your collection but were never cited by or citing anything you already have — shown as squares so they're easy to tell apart from your existing collection."
       },
       "zotero": {
-        "title": "Zotero import & sync",
-        "body": "Connect your library once, build a map from any collection, and add anything you find straight back to Zotero — PDF included, no manual export/import."
+        "title": "Reference manager import & sync",
+        "body": "Connect Zotero or Mendeley once, build a map from any collection, and add anything you find straight back — PDF included, no manual export/import."
       }
     },
     "footer": {
@@ -112,7 +112,7 @@
     "email": "Email",
     "logout": "Log out",
     "delete": "Delete account",
-    "deleteConfirm": "This permanently deletes your account, maps, and Zotero connection.",
+    "deleteConfirm": "This permanently deletes your account, maps, and Zotero or Mendeley connection.",
     "deleteYes": "Delete permanently",
     "deleteNo": "Cancel",
     "deleting": "Deleting…",
@@ -126,3 +126,4 @@
     "de": "Deutsch"
   }
 }
+

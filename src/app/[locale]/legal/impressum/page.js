@@ -61,7 +61,7 @@ function De() {
 
       <h2 style={p.h2}>Haftung für Links</h2>
       <p style={p.p}>
-        Unser Angebot enthält Links zu externen Websites Dritter (z. B. OpenAlex, Zotero), auf
+        Unser Angebot enthält Links zu externen Websites Dritter (z. B. OpenAlex, Zotero, Mendeley), auf
         deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets
         der jeweilige Anbieter verantwortlich.
       </p>
@@ -120,7 +120,7 @@ function En() {
 
       <h2 style={p.h2}>Liability for links</h2>
       <p style={p.p}>
-        Our offering contains links to external third-party websites (e.g. OpenAlex, Zotero)
+        Our offering contains links to external third-party websites (e.g. OpenAlex, Zotero, Mendeley)
         over whose content we have no influence. The respective provider is always responsible
         for the content of linked pages.
       </p>

@@ -11,13 +11,13 @@ export const metadata = {
   metadataBase: new URL("https://orblit.io"),
   title: "OrbLit - Citation Explorer",
   description:
-    "Search OpenAlex, visualize citation networks, and sync with your Zotero library.",
+    "Search OpenAlex, visualize citation networks, and sync with Zotero or Mendeley.",
   applicationName: "OrbLit",
   openGraph: {
     siteName: "OrbLit",
     title: "OrbLit",
     description:
-      "Search OpenAlex, visualize citation networks, and sync with your Zotero library.",
+      "Search OpenAlex, visualize citation networks, and sync with Zotero or Mendeley.",
     url: "https://orblit.io",
     type: "website",
   },

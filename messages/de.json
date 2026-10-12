@@ -5,8 +5,8 @@
       "signup": "Registrieren"
     },
     "hero": {
-      "title": "Die Citation Map, die in deiner Zotero-Bibliothek lebt.",
-      "tagline": "OrbLit synchronisiert direkt mit Zotero, findet thematische Cluster in deiner Literatur und deckt verwandte Paper auf, die deine Zitationen allein nie zeigen würden. Kostenlos und Open Source.",
+      "title": "Die Citation Map, die in deiner Literaturverwaltung lebt.",
+      "tagline": "OrbLit synchronisiert mit Zotero und Mendeley, findet thematische Cluster in deiner Literatur und deckt verwandte Paper auf, die deine Zitationen allein nie zeigen würden. Kostenlos und Open Source.",
       "ctaPrimary": "Kostenlos starten",
       "ctaSecondary": "Auf GitHub ansehen"
     },
@@ -21,8 +21,8 @@
         "body": "Zitationen und Referenzen werden zu einem erkundbaren Wissensnetzwerk - ziehen, erweitern und zoomen, um Verbindungen zu sehen."
       },
       "zotero": {
-        "title": "Mit Zotero synchronisieren",
-        "body": "Bibliothek einmal verbinden, danach mit einem Klick synchron halten - neue Paper, DOI-Abgleiche und Ergänzungen werden übernommen."
+        "title": "Mit der Literaturverwaltung synchronisieren",
+        "body": "Zotero oder Mendeley einmal verbinden, danach mit einem Klick synchron halten — neue Paper, DOI-Abgleiche und Ergänzungen werden übernommen."
       },
       "tags": {
         "title": "Taggen & organisieren",
@@ -48,8 +48,8 @@
         "body": "Finde Paper, die deiner Sammlung thematisch nahe sind, aber weder zitiert werden noch selbst zitieren — als Quadrate dargestellt, damit sie sich klar von deiner Sammlung unterscheiden."
       },
       "zotero": {
-        "title": "Zotero-Import & -Sync",
-        "body": "Bibliothek einmal verbinden, aus jeder Sammlung eine Karte bauen und alles Gefundene direkt zurück zu Zotero hinzufügen — PDF inklusive, ohne manuellen Export/Import."
+        "title": "Import und Sync der Literaturverwaltung",
+        "body": "Zotero oder Mendeley einmal verbinden, aus jeder Sammlung eine Karte bauen und alles Gefundene direkt zurückschreiben — PDF inklusive, ohne manuellen Export/Import."
       }
     },
     "footer": {
@@ -112,7 +112,7 @@
     "email": "E-Mail",
     "logout": "Abmelden",
     "delete": "Konto löschen",
-    "deleteConfirm": "Das löscht dein Konto, deine Karten und die Zotero-Verbindung dauerhaft.",
+    "deleteConfirm": "Das löscht dein Konto, deine Karten und die Verbindung zu Zotero oder Mendeley dauerhaft.",
     "deleteYes": "Endgültig löschen",
     "deleteNo": "Abbrechen",
     "deleting": "Wird gelöscht…",
@@ -126,3 +126,4 @@
     "de": "Deutsch"
   }
 }
+

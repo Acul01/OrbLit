@@ -11,7 +11,7 @@ const content = {
   en: {
     title: "Connected Papers Alternative: OrbLit vs. Connected Papers",
     description:
-      "Comparing OrbLit and Connected Papers: one persistent collection map vs. single-origin graphs, Zotero direction, and a free open-source tool.",
+      "Comparing OrbLit and Connected Papers: one persistent collection map vs. single-origin graphs, Zotero and Mendeley sync, and a free open-source tool.",
     h1: "OrbLit vs. Connected Papers — one growing map vs. a graph per paper",
     intro:
       "This page compares OrbLit and Connected Papers for anyone deciding between the two. Connected Papers excels at exploring the neighborhood of one paper at a time, with no account required. OrbLit is built around one persistent map of your whole collection instead — the right choice depends on which of those two workflows matches how you actually work.",
@@ -24,8 +24,8 @@ const content = {
         competitor: "No account needed, 5 new graphs/month free · Academic from $5/mo, Business $15/mo (billed quarterly)",
       },
       {
-        label: "Zotero sync",
-        orblit: "Import a whole collection + add papers back to Zotero (incl. PDF), one click",
+        label: "Reference manager sync",
+        orblit: "Import a whole collection from Zotero or Mendeley and add papers back (incl. PDF), one click",
         competitor: "Export only, to Zotero/Mendeley/EndNote — no import or ongoing sync",
       },
       {
@@ -58,7 +58,7 @@ const content = {
     orblitBetterTitle: "When OrbLit is the better choice",
     orblitBetterPoints: [
       "OrbLit builds one persistent, growing map of your whole collection instead of a separate graph per origin paper — closer to how an actual literature review works than exploring one paper's neighborhood at a time.",
-      "Zotero goes both ways — import a whole collection and add papers straight back into Zotero (with the PDF). Connected Papers can only export to Zotero, not import or sync from it.",
+      "Zotero and Mendeley go both ways — import a whole collection and add papers straight back (with the PDF). Connected Papers can only export to Zotero, Mendeley, or EndNote, not import or sync from them.",
       "Thematic clustering applies across your whole collection, not just the papers similar to a single origin paper.",
     ],
     screenshotCaption:
@@ -70,13 +70,13 @@ const content = {
       { href: "/compare", label: "All comparisons" },
       { href: "/compare/litmaps-alternative", label: "OrbLit vs. Litmaps" },
       { href: "/compare/researchrabbit-alternative", label: "OrbLit vs. ResearchRabbit" },
-      { href: "/zotero-citation-map", label: "Citation maps from your Zotero library" },
+      { href: "/zotero-citation-map", label: "Citation maps for Zotero and Mendeley" },
     ],
   },
   de: {
     title: "Connected Papers Alternative: OrbLit im Vergleich",
     description:
-      "OrbLit vs. Connected Papers im Vergleich: eine durchgehende Sammlungskarte vs. Einzel-Graphen, Zotero-Richtung und ein kostenloses Open-Source-Tool.",
+      "OrbLit vs. Connected Papers im Vergleich: eine durchgehende Sammlungskarte vs. Einzel-Graphen, Sync mit Zotero und Mendeley und ein kostenloses Open-Source-Tool.",
     h1: "OrbLit vs. Connected Papers — eine wachsende Karte vs. ein Graph pro Paper",
     intro:
       "Diese Seite vergleicht OrbLit und Connected Papers für alle, die zwischen beiden Tools entscheiden. Connected Papers ist stark darin, die Umgebung eines einzelnen Papers zu erkunden, ganz ohne Account. OrbLit baut stattdessen auf einer durchgehenden Karte deiner gesamten Sammlung auf — welches Tool passt, hängt davon ab, welcher der beiden Arbeitsweisen näher an deiner eigenen liegt.",
@@ -89,8 +89,8 @@ const content = {
         competitor: "Ohne Account nutzbar, 5 neue Graphen/Monat kostenlos · Academic ab $5/Monat, Business $15/Monat (quartalsweise)",
       },
       {
-        label: "Zotero-Sync",
-        orblit: "Ganze Sammlung importieren + Paper zurück zu Zotero hinzufügen (inkl. PDF), ein Klick",
+        label: "Literaturverwaltung",
+        orblit: "Ganze Sammlung aus Zotero oder Mendeley importieren und Paper zurückschreiben (inkl. PDF), ein Klick",
         competitor: "Nur Export zu Zotero/Mendeley/EndNote — kein Import oder fortlaufender Sync",
       },
       {
@@ -123,7 +123,7 @@ const content = {
     orblitBetterTitle: "Wann OrbLit die bessere Wahl ist",
     orblitBetterPoints: [
       "OrbLit baut eine durchgehende, wachsende Karte der gesamten Sammlung statt eines separaten Graphen pro Startpaper — näher an einer echten Literaturrecherche als das Erkunden einzelner Paper-Umgebungen.",
-      "Zotero funktioniert in beide Richtungen — ganze Sammlung importieren und Paper direkt zurück zu Zotero hinzufügen (inkl. PDF). Connected Papers kann nur zu Zotero exportieren, nicht importieren oder synchronisieren.",
+      "Zotero und Mendeley funktionieren in beide Richtungen — ganze Sammlung importieren und Paper direkt zurückschreiben (inkl. PDF). Connected Papers kann nur nach Zotero, Mendeley oder EndNote exportieren, nicht importieren oder synchronisieren.",
       "Thematisches Clustering gilt für die gesamte Sammlung, nicht nur für die Paper rund um ein einzelnes Startpaper.",
     ],
     screenshotCaption:
@@ -135,7 +135,7 @@ const content = {
       { href: "/compare", label: "Alle Vergleiche" },
       { href: "/compare/litmaps-alternative", label: "OrbLit vs. Litmaps" },
       { href: "/compare/researchrabbit-alternative", label: "OrbLit vs. ResearchRabbit" },
-      { href: "/zotero-citation-map", label: "Citation Maps aus deiner Zotero-Bibliothek" },
+      { href: "/zotero-citation-map", label: "Citation Maps für Zotero und Mendeley" },
     ],
   },
 };

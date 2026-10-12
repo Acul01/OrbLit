@@ -35,10 +35,10 @@ function De() {
       <p style={p.p}>
         OrbLit ist ein webbasiertes Werkzeug zur Recherche und Visualisierung von
         Zitationsnetzwerken auf Basis der OpenAlex-Datenbank sowie zur optionalen
-        Synchronisierung mit der Literaturverwaltung Zotero. Der Anbieter ist bemüht, eine hohe
+        Synchronisierung mit den Literaturverwaltungen Zotero und Mendeley. Der Anbieter ist bemüht, eine hohe
         Verfügbarkeit sicherzustellen, übernimmt jedoch keine Gewähr für eine ununterbrochene
         Erreichbarkeit, insbesondere bei Wartungsarbeiten oder Störungen bei Drittanbietern
-        (z. B. OpenAlex, Zotero).
+        (z. B. OpenAlex, Zotero, Mendeley).
       </p>
 
       <h2 style={p.h2}>§ 4 Zulässige Nutzung</h2>
@@ -92,9 +92,9 @@ function En() {
       <h2 style={p.h2}>§ 3 Service</h2>
       <p style={p.p}>
         OrbLit is a web-based tool for researching and visualizing citation networks based on
-        the OpenAlex database, with optional synchronization with the Zotero reference manager.
+        the OpenAlex database, with optional synchronization with Zotero and Mendeley.
         The Provider strives to ensure high availability but does not guarantee uninterrupted
-        access, particularly during maintenance or third-party outages (e.g. OpenAlex, Zotero).
+        access, particularly during maintenance or third-party outages (e.g. OpenAlex, Zotero, Mendeley).
       </p>
 
       <h2 style={p.h2}>§ 4 Acceptable use</h2>

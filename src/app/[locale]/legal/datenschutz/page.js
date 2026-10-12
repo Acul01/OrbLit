@@ -27,8 +27,8 @@ function De() {
       <h2 style={p.h2}>2. Übersicht der Verarbeitungen</h2>
       <p style={p.p}>
         Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung der
-        Funktionen von OrbLit (Zitationsnetzwerk-Kartierung mit OpenAlex- und
-        Zotero-Anbindung) erforderlich ist. Im Einzelnen setzen wir folgende Dienste ein:
+        Funktionen von OrbLit (Zitationsnetzwerk-Kartierung mit OpenAlex sowie
+        Anbindung an Zotero und Mendeley) erforderlich ist. Im Einzelnen setzen wir folgende Dienste ein:
       </p>
       <ul style={p.ul}>
         <li style={p.li}>
@@ -48,7 +48,7 @@ function De() {
           Daten übermittelt)
         </li>
         <li style={p.li}>
-          <strong>Zotero</strong> — optionale Synchronisierung Ihrer Literaturverwaltung
+          <strong>Zotero und Mendeley</strong> — optionale Synchronisierung Ihrer Literaturverwaltung
         </li>
       </ul>
 
@@ -112,15 +112,18 @@ function De() {
         Datenschutzerklärung von OpenAlex/OurResearch.
       </p>
 
-      <h2 style={p.h2}>7. Zotero-Integration</h2>
+      <h2 style={p.h2}>7. Literaturverwaltung (Zotero und Mendeley)</h2>
       <p style={p.p}>
-        Wenn Sie Ihre Zotero-Bibliothek verbinden, speichern wir Ihre Zotero-Nutzer-ID und
-        Ihren Zotero-API-Schlüssel verschlüsselt (AES-256) auf unseren Servern, um in Ihrem
-        Auftrag mit der Zotero-API zu kommunizieren (z. B. Sammlungen abzurufen, Einträge
-        hinzuzufügen). Der Schlüssel wird zu keinem Zeitpunkt an Dritte weitergegeben oder im
-        Browser gespeichert. Sie können die Verbindung jederzeit in der Anwendung trennen,
-        wodurch der gespeicherte Schlüssel gelöscht wird. Rechtsgrundlage ist Art. 6 Abs. 1
-        lit. b DSGVO (Vertragserfüllung).
+        Wenn Sie Zotero verbinden, speichern wir Ihre Zotero-Nutzer-ID und Ihren
+        Zotero-API-Schlüssel verschlüsselt (AES-256) auf unseren Servern, um in Ihrem Auftrag
+        mit der Zotero-API zu kommunizieren (z. B. Sammlungen abzurufen, Einträge
+        hinzuzufügen). Wenn Sie Mendeley verbinden, speichern wir Ihre Mendeley-Profil-ID
+        sowie die OAuth-Zugangs- und Aktualisierungstoken ebenfalls verschlüsselt (AES-256),
+        um in Ihrem Auftrag mit der Mendeley-API zu kommunizieren (z. B. Ordner abzurufen,
+        Dokumente hinzuzufügen). Schlüssel und Token werden zu keinem Zeitpunkt an Dritte
+        weitergegeben oder im Browser gespeichert. Sie können jede Verbindung jederzeit in
+        der Anwendung trennen, wodurch die gespeicherten Zugangsdaten gelöscht werden.
+        Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).
       </p>
 
       <h2 style={p.h2}>8. Cookies</h2>
@@ -170,7 +173,7 @@ function En() {
       <h2 style={p.h2}>2. Overview of processing</h2>
       <p style={p.p}>
         We only process personal data to the extent necessary to provide OrbLit&apos;s features
-        (citation network mapping with OpenAlex and Zotero integration). Specifically, we use:
+        (citation network mapping with OpenAlex and Zotero and Mendeley integration). Specifically, we use:
       </p>
       <ul style={p.ul}>
         <li style={p.li}>
@@ -189,7 +192,7 @@ function En() {
           <strong>OpenAlex</strong> — literature search (public API, no personal data transmitted)
         </li>
         <li style={p.li}>
-          <strong>Zotero</strong> — optional sync with your reference library
+          <strong>Zotero and Mendeley</strong> — optional sync with your reference manager
         </li>
       </ul>
 
@@ -249,13 +252,16 @@ function En() {
         transmitted by us in the process. OpenAlex/OurResearch&apos;s privacy policy applies.
       </p>
 
-      <h2 style={p.h2}>7. Zotero integration</h2>
+      <h2 style={p.h2}>7. Reference manager (Zotero and Mendeley)</h2>
       <p style={p.p}>
-        If you connect your Zotero library, we store your Zotero user ID and API key encrypted
-        (AES-256) on our servers to communicate with the Zotero API on your behalf (e.g.
-        fetching collections, adding items). The key is never shared with third parties or
-        stored in your browser. You can disconnect at any time within the app, which deletes
-        the stored key. Legal basis: Art. 6(1)(b) GDPR (contract performance).
+        If you connect Zotero, we store your Zotero user ID and API key encrypted (AES-256) on
+        our servers to communicate with the Zotero API on your behalf (e.g. fetching
+        collections, adding items). If you connect Mendeley, we also store your Mendeley
+        profile ID and the OAuth access and refresh tokens encrypted (AES-256), so we can
+        communicate with the Mendeley API on your behalf (e.g. fetching folders, adding
+        documents). Keys and tokens are never shared with third parties or stored in your
+        browser. You can disconnect either library at any time in the app, which deletes the
+        stored credentials. Legal basis: Art. 6(1)(b) GDPR (contract performance).
       </p>
 
       <h2 style={p.h2}>8. Cookies</h2>
