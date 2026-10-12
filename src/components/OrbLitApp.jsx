@@ -8,6 +8,7 @@ import {
   X,
   Loader2,
   BookOpen,
+  MousePointerClick,
   ExternalLink,
   Library,
   Check,
@@ -2751,9 +2752,12 @@ export default function App() {
             // surrounding layout's scroll containers are set up.
             position: "sticky",
             top: 0,
-            alignSelf: "flex-start",
-            maxHeight: mapHeight + 12,
+            alignSelf: "stretch",
+            height: "100%",
+            boxSizing: "border-box",
             overflowY: "auto",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           {!selected && nodesRef.current.length === 0 && (
@@ -2761,6 +2765,28 @@ export default function App() {
               <BookOpen size={18} style={{ marginBottom: 8 }} />
               <p>Search above for an article, or connect Zotero or Mendeley and click Create Map for a collection overview.</p>
               <p style={{ marginTop: 10 }}>Click = details · Double-click = expand · Scroll = zoom</p>
+            </div>
+          )}
+          {!selected && nodesRef.current.length > 0 && (
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                gap: 10,
+                padding: 24,
+                border: "1px dashed #2A3B5C",
+                borderRadius: 10,
+                background: "#121B2E",
+                color: "#7C8AA3",
+                lineHeight: 1.5,
+              }}
+            >
+              <MousePointerClick size={18} />
+              <p style={{ margin: 0 }}>Select a paper to view information.</p>
             </div>
           )}
           {selected && (
