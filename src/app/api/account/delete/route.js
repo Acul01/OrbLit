@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Deletes the signed-in auth user. profiles, projects, feedback, and
-// zotero_credentials cascade from auth.users (0001_init.sql).
+// Deletes the signed-in auth user. profiles, projects, feedback,
+// zotero_credentials (0001_init.sql), and mendeley_credentials
+// (0009_mendeley_credentials.sql) cascade from auth.users.
 export async function POST() {
   const supabase = await createClient();
   const {

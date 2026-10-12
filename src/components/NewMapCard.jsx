@@ -6,28 +6,48 @@ import { inputStyle, btnStyle } from "@/lib/ui-styles";
 
 const OPENALEX_API = "https://api.openalex.org/works";
 
-/** Centered card shown after "New map" — either build from an existing
- *  Zotero collection, or start from a single paper (a fresh Zotero
- *  collection containing just that paper gets created behind the
- *  scenes, so the resulting map is a normal Zotero-backed collection
- *  map). Dismissible; also auto-hides once a map is actually built. */
+/** Centered card shown after "New map" — build from a Zotero collection
+ *  or a Mendeley folder, or start from a single paper (a fresh folder
+ *  containing just that paper gets created behind the scenes). */
 export default function NewMapCard({
   zoteroConnected,
+  mendeleyConnected,
   zoteroCollections,
-  selectedCollectionKey,
-  onSelectCollection,
+  mendeleyCollections,
+  libraryProvider,
   onCreateMap,
   onCreateFromPaper,
   onConnectZotero,
+  onConnectMendeley,
   busy,
   loading,
   onDismiss,
 }) {
+  const anyConnected = zoteroConnected || mendeleyConnected;
+  const bothConnected = zoteroConnected && mendeleyConnected;
+  const [source, setSource] = useState(
+    bothConnected ? (libraryProvider === "mendeley" ? "mendeley" : "zotero") : mendeleyConnected ? "mendeley" : "zotero"
+  );
+  const [folderKey, setFolderKey] = useState("");
   const [mode, setMode] = useState("collection"); // "collection" | "paper"
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [picked, setPicked] = useState(null);
+
+  const activeSource =
+    source === "mendeley" && mendeleyConnected
+      ? "mendeley"
+      : mendeleyConnected && !zoteroConnected
+        ? "mendeley"
+        : "zotero";
+  const sourceName = activeSource === "mendeley" ? "Mendeley" : "Zotero";
+  const collections = activeSource === "mendeley" ? mendeleyCollections : zoteroCollections;
+
+  function chooseSource(next) {
+    setSource(next);
+    setFolderKey("");
+  }
 
   async function searchPapers() {
     if (!query.trim()) return;
@@ -48,7 +68,7 @@ export default function NewMapCard({
 
   function handlePick(work) {
     setPicked(work.id);
-    onCreateFromPaper(work);
+    onCreateFromPaper(work, activeSource);
   }
 
   return (
@@ -59,7 +79,24 @@ export default function NewMapCard({
         </button>
         <h2 style={s.title}>Start this map</h2>
 
-        {zoteroConnected && (
+        {bothConnected && (
+          <div style={s.modeToggle}>
+            <button
+              onClick={() => chooseSource("zotero")}
+              style={{ ...s.modeButton, ...(source === "zotero" ? s.modeButtonActive : {}) }}
+            >
+              Zotero
+            </button>
+            <button
+              onClick={() => chooseSource("mendeley")}
+              style={{ ...s.modeButton, ...(source === "mendeley" ? s.modeButtonActive : {}) }}
+            >
+              Mendeley
+            </button>
+          </div>
+        )}
+
+        {anyConnected && (
           <div style={s.modeToggle}>
             <button
               onClick={() => setMode("collection")}
@@ -76,34 +113,44 @@ export default function NewMapCard({
           </div>
         )}
 
-        {!zoteroConnected ? (
+        {!anyConnected ? (
           <>
-            <p style={s.body}>Connect Zotero to build a map from one of your collections.</p>
-            <button
-              onClick={onConnectZotero}
-              style={{ ...btnStyle(), width: "100%", justifyContent: "center" }}
-            >
-              <Library size={14} /> Connect Zotero
-            </button>
+            <p style={s.body}>Connect Zotero or Mendeley to build a map from one of your collections.</p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={onConnectZotero}
+                style={{ ...btnStyle(), flex: 1, justifyContent: "center" }}
+              >
+                <Library size={14} /> Zotero
+              </button>
+              <button
+                onClick={onConnectMendeley}
+                style={{ ...btnStyle(), flex: 1, justifyContent: "center" }}
+              >
+                <Library size={14} /> Mendeley
+              </button>
+            </div>
           </>
         ) : mode === "collection" ? (
           <>
-            <p style={s.body}>Build a citation map from a Zotero collection.</p>
+            <p style={s.body}>
+              Build a citation map from a {sourceName} {activeSource === "mendeley" ? "folder" : "collection"}.
+            </p>
             <select
-              value={selectedCollectionKey}
-              onChange={(e) => onSelectCollection(e.target.value)}
+              value={folderKey}
+              onChange={(e) => setFolderKey(e.target.value)}
               disabled={busy}
               style={{ ...inputStyle(), width: "100%", cursor: busy ? "wait" : "pointer" }}
             >
               <option value="">Main library</option>
-              {zoteroCollections.map((c) => (
+              {collections.map((c) => (
                 <option key={c.key} value={c.key}>
                   {c.name}
                 </option>
               ))}
             </select>
             <button
-              onClick={onCreateMap}
+              onClick={() => onCreateMap(activeSource, folderKey)}
               disabled={loading || busy}
               style={{ ...btnStyle(), width: "100%", justifyContent: "center", marginTop: 10 }}
             >
@@ -113,8 +160,8 @@ export default function NewMapCard({
         ) : (
           <>
             <p style={s.body}>
-              Pick a paper to start from — we&apos;ll create a new Zotero collection with just
-              that paper in it.
+              Pick a paper to start from — we&apos;ll create a new {sourceName}{" "}
+              {activeSource === "mendeley" ? "folder" : "collection"} with just that paper in it.
             </p>
             <div style={s.searchRow}>
               <input

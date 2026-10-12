@@ -154,6 +154,26 @@ export default function App() {
   const [zoteroBusy, setZoteroBusy] = useState(false);
   const [zoteroMsg, setZoteroMsg] = useState("");
   const zoteroDoisRef = useRef(new Set());
+  // Which library the current map reads and writes. Old saved maps omit
+  // this and stay on Zotero. The ref is what autosave reads, because the
+  // debounced payload closes over the render that scheduled it.
+  const [libraryProvider, setLibraryProviderState] = useState("zotero");
+  const libraryProviderRef = useRef("zotero");
+  function setLibraryProvider(next) {
+    const provider = next === "mendeley" ? "mendeley" : "zotero";
+    libraryProviderRef.current = provider;
+    setLibraryProviderState(provider);
+  }
+  const selectedCollectionKeyRef = useRef("");
+  function chooseCollection(key) {
+    selectedCollectionKeyRef.current = key;
+    setSelectedCollectionKey(key);
+  }
+  const [showMendeleyPanel, setShowMendeleyPanel] = useState(false);
+  const [mendeleyCollections, setMendeleyCollections] = useState([]);
+  const [mendeleyConnected, setMendeleyConnected] = useState(false);
+  const [mendeleyBusy, setMendeleyBusy] = useState(false);
+  const [mendeleyMsg, setMendeleyMsg] = useState("");
   // Papers hidden from the network map (and their edges) via the sidebar
   // toggle — a purely visual declutter, the node/link data itself stays
   // intact so it can be shown again. Persisted with the project.
@@ -256,6 +276,28 @@ export default function App() {
     simRef.current = sim;
 
     restoreZoteroConnection();
+    restoreMendeleyConnection();
+    const params = new URLSearchParams(window.location.search);
+    const mendeleyResult = params.get("mendeley");
+    if (mendeleyResult === "not_configured") {
+      setShowMendeleyPanel(true);
+      setMendeleyMsg("Mendeley is not set up on this server yet.");
+    } else if (mendeleyResult === "failed") {
+      setShowMendeleyPanel(true);
+      setMendeleyMsg("Mendeley connection failed. Try again.");
+    } else if (mendeleyResult === "connected") {
+      setShowMendeleyPanel(true);
+      setMendeleyMsg("Connected to Mendeley.");
+    }
+    if (mendeleyResult) {
+      params.delete("mendeley");
+      const next = params.toString();
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + (next ? `?${next}` : "") + window.location.hash
+      );
+    }
     return () => sim.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -447,6 +489,7 @@ export default function App() {
     highlightId,
     selected?.id,
     selectedCollectionKey,
+    libraryProvider,
   ]);
 
   useEffect(() => {
@@ -904,18 +947,16 @@ export default function App() {
   // to actually land in state (React state updates aren't synchronous, so
   // reading `selectedCollectionKey` right after setting it can still see
   // the old value). `labelOverride` similarly lets a caller that just
-  // created the collection pass its name directly, since `zoteroCollections`
-  // state won't include it yet either at that point.
-  async function createCollectionMap(collectionKeyOverride, labelOverride) {
-    if (!zoteroConnected) {
-      setShowZoteroPanel(true);
-      setZoteroMsg("Connect to Zotero first.");
+  // created the collection pass its name directly, since the collection
+  // list state won't include it yet either at that point.
+  async function createCollectionMap(collectionKeyOverride, labelOverride, providerOverride) {
+    const provider = providerOverride || libraryProviderRef.current;
+    if (!libraryConnected(provider)) {
+      promptLibrary(provider, `Connect to ${libraryLabel(provider)} first.`);
       return;
     }
-    const key = collectionKeyOverride ?? selectedCollectionKey;
-    const label =
-      labelOverride ??
-      (key === "" ? "main library" : zoteroCollections.find((c) => c.key === key)?.name || "collection");
+    const key = collectionKeyOverride ?? selectedCollectionKeyRef.current;
+    const label = labelOverride ?? collectionLabelFor(provider, key);
     await ensureDraftProjectCreated(label === "main library" ? "Untitled Map" : label);
 
     setLoadingMsg(`Building map from ${label}…`);
@@ -926,7 +967,7 @@ export default function App() {
     try {
       if (simRef.current) simRef.current.stop();
 
-      const items = await fetchZoteroItemsViaApi(key || null);
+      const items = await fetchLibraryItems(provider, key || null);
       const dois = items.map((it) => normalizeDoi(it.data.DOI)).filter(Boolean);
       if (!dois.length) {
         setError("No papers with DOIs found in this collection.");
@@ -1050,6 +1091,8 @@ export default function App() {
       nodesRef.current = nodes;
       linksRef.current = links;
       zoteroDoisRef.current = new Set(collectionNodes.map((n) => n.doi).filter(Boolean));
+      setLibraryProvider(provider);
+      chooseCollection(key || "");
       setShowDiscovery(true);
       setMapMode("collection");
       setShowStartCard(false);
@@ -1072,24 +1115,22 @@ export default function App() {
     }
   }
 
-  /** "Start this map from a single paper": creates a brand-new Zotero
-   *  collection containing just that one paper, then builds a normal
-   *  collection map from it — so the map behaves exactly like any other
-   *  Zotero-backed map afterwards (Synchronize re-fetches it, more
-   *  papers can be added to the same collection from Zotero directly, etc.),
-   *  it just starts from a single seed instead of an existing collection. */
-  async function createMapFromPaper(work) {
-    if (!zoteroConnected) {
+  /** "Start this map from a single paper": creates a brand-new folder in
+   *  the chosen library containing just that one paper, then builds a
+   *  normal collection map from it. */
+  async function createMapFromPaper(work, providerOverride) {
+    const provider = providerOverride || libraryProviderRef.current;
+    if (!libraryConnected(provider)) {
       dismissStartCard();
-      setShowZoteroPanel(true);
-      setZoteroMsg("Connect to Zotero first, then try again.");
+      promptLibrary(provider, `Connect to ${libraryLabel(provider)} first, then try again.`);
       return;
     }
+    const name = libraryLabel(provider);
     setLoadingMsg(`Creating a collection for "${(work.display_name || "").slice(0, 40)}…"`);
     setError(null);
     try {
       const title = work.display_name || "Untitled paper";
-      const colRes = await fetch("/api/zotero/collections", {
+      const colRes = await fetch(`${libraryBase(provider)}/collections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: title.slice(0, 60) }),
@@ -1098,9 +1139,9 @@ export default function App() {
       if (!colRes.ok) throw new Error(colData.error || "Failed to create collection");
       const newCollection = colData.collection;
 
-      setLoadingMsg("Adding paper to Zotero…");
+      setLoadingMsg(`Adding paper to ${name}…`);
       const full = await (await fetch(`${API}/${shortId(work.id)}`)).json();
-      const itemRes = await fetch("/api/zotero/items", {
+      const itemRes = await fetch(`${libraryBase(provider)}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1118,15 +1159,17 @@ export default function App() {
       });
       const itemResult = await itemRes.json();
       if (!(itemResult.successful && Object.keys(itemResult.successful).length > 0)) {
-        throw new Error("Zotero rejected the paper");
+        throw new Error(`${name} rejected the paper`);
       }
 
-      setZoteroCollections((prev) =>
+      const setCollections = provider === "mendeley" ? setMendeleyCollections : setZoteroCollections;
+      setCollections((prev) =>
         [...prev, newCollection].sort((a, b) => a.name.localeCompare(b.name))
       );
-      setSelectedCollectionKey(newCollection.key);
+      setLibraryProvider(provider);
+      chooseCollection(newCollection.key);
       setShowStartCard(false);
-      await createCollectionMap(newCollection.key, title);
+      await createCollectionMap(newCollection.key, title, provider);
     } catch (e) {
       console.warn(e);
       setError(e?.message ? `Could not start map from paper: ${e.message}` : "Could not start map from paper.");
@@ -1141,16 +1184,47 @@ export default function App() {
   // (see src/app/api/zotero/*, src/lib/zotero-server.js, src/lib/crypto.js).
   // The session cookie (already on every request) is what authorizes them.
 
-  async function fetchZoteroItemsViaApi(collectionKey) {
-    const params = collectionKey ? `?collectionKey=${encodeURIComponent(collectionKey)}` : "";
-    const res = await fetch(`/api/zotero/items${params}`);
-    if (!res.ok) throw new Error("Failed to fetch Zotero items");
-    const { items } = await res.json();
-    return items;
+  function libraryLabel(provider) {
+    return provider === "mendeley" ? "Mendeley" : "Zotero";
   }
 
-  async function syncDois(collectionKey) {
-    const items = await fetchZoteroItemsViaApi(collectionKey || null);
+  function libraryBase(provider) {
+    return provider === "mendeley" ? "/api/mendeley" : "/api/zotero";
+  }
+
+  function libraryConnected(provider) {
+    return provider === "mendeley" ? mendeleyConnected : zoteroConnected;
+  }
+
+  function libraryCollections(provider) {
+    return provider === "mendeley" ? mendeleyCollections : zoteroCollections;
+  }
+
+  function collectionLabelFor(provider, key) {
+    if (!key) return "main library";
+    return libraryCollections(provider).find((c) => c.key === key)?.name || "collection";
+  }
+
+  function promptLibrary(provider, message) {
+    if (provider === "mendeley") {
+      setShowMendeleyPanel(true);
+      setMendeleyMsg(message);
+    } else {
+      setShowZoteroPanel(true);
+      setZoteroMsg(message);
+    }
+  }
+
+  async function fetchLibraryItems(provider, collectionKey) {
+    const params = collectionKey ? `?collectionKey=${encodeURIComponent(collectionKey)}` : "";
+    const res = await fetch(`${libraryBase(provider)}/items${params}`);
+    if (!res.ok) throw new Error(`Failed to fetch ${libraryLabel(provider)} items`);
+    const data = await res.json();
+    return data.items || [];
+  }
+
+  async function syncDois(collectionKey, provider = "zotero") {
+    const items = await fetchLibraryItems(provider, collectionKey || null);
     zoteroDoisRef.current = new Set(
       items.map((it) => normalizeDoi(it.data && it.data.DOI)).filter(Boolean)
     );
@@ -1175,10 +1249,51 @@ export default function App() {
       setZoteroUserId(status.zoteroUserId);
       setZoteroCollections(collections);
       setZoteroConnected(true);
-      await syncDois(selectedCollectionKey);
+      if (libraryProviderRef.current === "zotero") {
+        await syncDois(selectedCollectionKeyRef.current, "zotero");
+      }
     } catch {
       // Not connected yet, or the stored key stopped working — user can
       // reconnect via the Zotero panel same as a first-time setup.
+    }
+  }
+
+  async function restoreMendeleyConnection() {
+    try {
+      const statusRes = await fetch("/api/mendeley/credentials");
+      if (!statusRes.ok) return;
+      const status = await statusRes.json();
+      if (!status.connected) return;
+
+      const colRes = await fetch("/api/mendeley/collections");
+      if (!colRes.ok) return;
+      const { collections } = await colRes.json();
+      setMendeleyCollections(collections || []);
+      setMendeleyConnected(true);
+    } catch {
+      // Not connected, or the stored session stopped working.
+    }
+  }
+
+  function connectMendeley() {
+    const next = window.location.pathname;
+    window.location.href = `/api/mendeley/connect?next=${encodeURIComponent(next)}`;
+  }
+
+  async function disconnectMendeley() {
+    setMendeleyBusy(true);
+    try {
+      await fetch("/api/mendeley/credentials", { method: "DELETE" });
+    } finally {
+      setMendeleyConnected(false);
+      setMendeleyCollections([]);
+      if (libraryProviderRef.current === "mendeley") {
+        chooseCollection("");
+        zoteroDoisRef.current = new Set();
+      }
+      setMendeleyBusy(false);
+      setMendeleyMsg("Disconnected from Mendeley.");
+      setTimeout(() => setMendeleyMsg(""), 4000);
     }
   }
 
@@ -1202,11 +1317,18 @@ export default function App() {
       if (!res.ok) throw new Error(data.error || "Connection failed");
 
       setZoteroCollections(data.collections);
-      const count = await syncDois(selectedCollectionKey);
+      const count =
+        libraryProviderRef.current === "zotero"
+          ? await syncDois(selectedCollectionKeyRef.current, "zotero")
+          : null;
       setZoteroUserId(userId);
       setZoteroApiKey(""); // never held in memory longer than the request above needs it
       setZoteroConnected(true);
-      setZoteroMsg(`Connected — ${data.collections.length} collections, synced ${count} entries.`);
+      setZoteroMsg(
+        count == null
+          ? `Connected — ${data.collections.length} collections.`
+          : `Connected — ${data.collections.length} collections, synced ${count} entries.`
+      );
     } catch (e) {
       setZoteroMsg(e.message || "Connection failed. Check User ID and API key.");
       setZoteroConnected(false);
@@ -1226,38 +1348,21 @@ export default function App() {
       setZoteroCollections([]);
       setZoteroUserId("");
       setZoteroApiKey("");
-      setSelectedCollectionKey("");
-      zoteroDoisRef.current = new Set();
+      if (libraryProviderRef.current === "zotero") {
+        chooseCollection("");
+        zoteroDoisRef.current = new Set();
+      }
       setZoteroBusy(false);
       setZoteroMsg("Disconnected from Zotero.");
       setTimeout(() => setZoteroMsg(""), 4000);
     }
   }
 
-  async function selectCollection(collectionKey) {
-    setSelectedCollectionKey(collectionKey);
-    if (!zoteroConnected) return;
-    setZoteroBusy(true);
-    const label =
-      collectionKey === ""
-        ? "main library"
-        : zoteroCollections.find((c) => c.key === collectionKey)?.name || "collection";
-    setZoteroMsg(`Syncing ${label}…`);
-    try {
-      const count = await syncDois(collectionKey);
-      setZoteroMsg(`Using ${label} — synced ${count} entries.`);
-    } catch (e) {
-      setZoteroMsg("Failed to sync collection.");
-    } finally {
-      setZoteroBusy(false);
-      setTimeout(() => setZoteroMsg(""), 4000);
-    }
-  }
-
-  async function addToZotero(node) {
-    if (!zoteroConnected) {
-      setShowZoteroPanel(true);
-      setZoteroMsg("Connect to Zotero first, then add.");
+  async function addToLibrary(node) {
+    const provider = libraryProviderRef.current;
+    const name = libraryLabel(provider);
+    if (!libraryConnected(provider)) {
+      promptLibrary(provider, `Connect to ${name} first, then add.`);
       return;
     }
     setAddingId(node.id);
@@ -1274,10 +1379,10 @@ export default function App() {
         abstract_inverted_index: w.abstract_inverted_index,
       };
 
-      const res = await fetch("/api/zotero/items", {
+      const res = await fetch(`${libraryBase(provider)}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ node: full, collectionKey: selectedCollectionKey || null }),
+        body: JSON.stringify({ node: full, collectionKey: selectedCollectionKeyRef.current || null }),
       });
       const result = await res.json();
       if (result.successful && Object.keys(result.successful).length > 0) {
@@ -1292,10 +1397,11 @@ export default function App() {
           setSelected({ ...mapNode, kind: "collection" });
         }
         const title = full.label.slice(0, 40);
-        setZoteroMsg(
+        const setMsg = provider === "mendeley" ? setMendeleyMsg : setZoteroMsg;
+        setMsg(
           result.pdfAttached
-            ? `Added "${title}…" to Zotero (with PDF).`
-            : `Added "${title}…" to Zotero. No PDF available (not Open Access).`
+            ? `Added "${title}…" to ${name} (with PDF).`
+            : `Added "${title}…" to ${name}. No PDF available (not Open Access).`
         );
         setTick((t) => t + 1);
         // Without this, the discovery -> collection flip above only lives
@@ -1304,14 +1410,19 @@ export default function App() {
         // "discovery" state and require a full manual Synchronize to fix.
         autosave();
       } else {
-        setZoteroMsg("Zotero rejected the paper (see console).");
+        const setMsg = provider === "mendeley" ? setMendeleyMsg : setZoteroMsg;
+        setMsg(`${name} rejected the paper (see console).`);
         console.warn(result);
       }
-    } catch (e) {
-      setZoteroMsg("Failed to add.");
+    } catch {
+      const setMsg = provider === "mendeley" ? setMendeleyMsg : setZoteroMsg;
+      setMsg("Failed to add.");
     } finally {
       setAddingId(null);
-      setTimeout(() => setZoteroMsg(""), 5000);
+      setTimeout(() => {
+        setZoteroMsg("");
+        setMendeleyMsg("");
+      }, 5000);
     }
   }
 
@@ -1321,10 +1432,17 @@ export default function App() {
   /** Builds the same payload shape whether it's about to be autosaved to
    *  Supabase or downloaded as a JSON file. */
   function buildProjectPayload() {
-    const collectionName =
-      selectedCollectionKey === ""
-        ? ""
-        : zoteroCollections.find((c) => c.key === selectedCollectionKey)?.name || "";
+    const provider = libraryProviderRef.current;
+    const key = selectedCollectionKeyRef.current;
+    const collectionName = key ? collectionLabelFor(provider, key) : "";
+    const storedName = collectionName === "collection" || collectionName === "main library" ? "" : collectionName;
+    const dois = [...zoteroDoisRef.current];
+    const library = {
+      provider,
+      selectedCollectionKey: key,
+      collectionName: storedName,
+      dois,
+    };
     return {
       version: 2,
       app: "orblit",
@@ -1376,11 +1494,11 @@ export default function App() {
         highlightId,
         selectedId: selected?.id || null,
       },
-      zotero: {
-        selectedCollectionKey,
-        collectionName,
-        dois: [...zoteroDoisRef.current],
-      },
+      zotero:
+        provider === "zotero"
+          ? { selectedCollectionKey: key, collectionName: storedName, dois }
+          : { selectedCollectionKey: "", collectionName: "", dois: [] },
+      library,
     };
   }
 
@@ -1455,15 +1573,27 @@ export default function App() {
         }
         setHighlightId(ui.highlightId || null);
 
-        // Zotero metadata (no secrets)
-        if (data.zotero) {
+        // Library metadata (no secrets). Maps saved before Mendeley have
+        // only `zotero` and stay on Zotero.
+        if (data.library && (data.library.provider === "zotero" || data.library.provider === "mendeley")) {
+          setLibraryProvider(data.library.provider);
+          if (Array.isArray(data.library.dois)) {
+            zoteroDoisRef.current = new Set(
+              data.library.dois.map((d) => String(d).toLowerCase()).filter(Boolean)
+            );
+          }
+          if (typeof data.library.selectedCollectionKey === "string") {
+            chooseCollection(data.library.selectedCollectionKey);
+          }
+        } else if (data.zotero) {
+          setLibraryProvider("zotero");
           if (Array.isArray(data.zotero.dois)) {
             zoteroDoisRef.current = new Set(
               data.zotero.dois.map((d) => String(d).toLowerCase()).filter(Boolean)
             );
           }
           if (typeof data.zotero.selectedCollectionKey === "string") {
-            setSelectedCollectionKey(data.zotero.selectedCollectionKey);
+            chooseCollection(data.zotero.selectedCollectionKey);
           }
         } else {
           zoteroDoisRef.current = new Set(
@@ -1548,10 +1678,11 @@ export default function App() {
   }
 
   const axis = axisRef.current;
+  const activeCollections = libraryProvider === "mendeley" ? mendeleyCollections : zoteroCollections;
   const collectionLabel =
     selectedCollectionKey === ""
       ? "Main library"
-      : zoteroCollections.find((c) => c.key === selectedCollectionKey)?.name || "Collection";
+      : activeCollections.find((c) => c.key === selectedCollectionKey)?.name || "Collection";
 
   // Filter bounds + per-node link (degree) counts, derived fresh from the
   // current graph each render — cheap even during simulation ticks, and
@@ -1627,7 +1758,7 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
           <span style={{ fontSize: 22, letterSpacing: 0.5 }}>OrbLit — Citation Explorer</span>
           <span style={{ fontFamily: "ui-monospace, monospace", fontSize: 11, color: "#7C8AA3" }}>
-            Powered by OpenAlex + Zotero
+            Powered by OpenAlex, Zotero + Mendeley
           </span>
         </div>
 
@@ -1687,7 +1818,7 @@ export default function App() {
             style={{ ...btnStyle(), flexShrink: 0 }}
             title={
               mapMode === "collection"
-                ? "Re-fetch this collection from Zotero and rebuild the map"
+                ? `Re-fetch this collection from ${libraryLabel(libraryProvider)} and rebuild the map`
                 : "Check OpenAlex for new articles citing this paper"
             }
           >
@@ -1762,6 +1893,17 @@ export default function App() {
             }}
           >
             <Library size={14} /> {zoteroConnected ? "Zotero connected" : "Zotero"}
+          </button>
+          <button
+            onClick={() => setShowMendeleyPanel((s) => !s)}
+            style={{
+              ...btnStyle(),
+              flexShrink: 0,
+              background: mendeleyConnected ? "#1f3a30" : "#1a2740",
+              borderColor: mendeleyConnected ? "#2f5a45" : "#2c3b5a",
+            }}
+          >
+            <Library size={14} /> {mendeleyConnected ? "Mendeley connected" : "Mendeley"}
           </button>
         </div>
 
@@ -1838,6 +1980,34 @@ export default function App() {
           </div>
         )}
 
+        {showMendeleyPanel && (
+          <div
+            style={{
+              marginTop: 10,
+              background: "#121B2E",
+              border: "1px solid #24314C",
+              borderRadius: 8,
+              padding: 12,
+              fontFamily: "ui-sans-serif, system-ui",
+              fontSize: 12,
+            }}
+          >
+            <div style={{ color: "#7C8AA3", marginBottom: 8 }}>
+              Sign in on Mendeley&apos;s site. OrbLit stores only an encrypted
+              access token on the server, never your password.
+            </div>
+            {mendeleyConnected ? (
+              <button onClick={disconnectMendeley} style={btnStyle()}>
+                {mendeleyBusy ? <Loader2 size={14} className="spin" /> : "Disconnect"}
+              </button>
+            ) : (
+              <button onClick={connectMendeley} style={btnStyle()}>
+                Connect Mendeley
+              </button>
+            )}
+          </div>
+        )}
+
         {searchResults.length > 0 && (
           <div style={{ marginTop: 10, background: "#121B2E", border: "1px solid #24314C", borderRadius: 8, overflow: "hidden" }}>
             {searchResults.map((w) => (
@@ -1857,12 +2027,13 @@ export default function App() {
           </div>
         )}
 
-        {(loadingMsg || error || savedMsg || zoteroMsg || tagError) && (
+        {(loadingMsg || error || savedMsg || zoteroMsg || mendeleyMsg || tagError) && (
           <div style={{ marginTop: 8, fontSize: 12, fontFamily: "ui-sans-serif, system-ui" }}>
             {loadingMsg && <span style={{ color: "#7C8AA3" }}>{loadingMsg}</span>}
             {error && <span style={{ color: "#E07856" }}>{error}</span>}
             {savedMsg && <span style={{ color: "#4FD1C5" }}>{savedMsg}</span>}
             {zoteroMsg && <span style={{ color: "#4FD1C5" }}> {zoteroMsg}</span>}
+            {mendeleyMsg && <span style={{ color: "#4FD1C5" }}> {mendeleyMsg}</span>}
             {tagError && <span style={{ color: "#E07856" }}> {tagError}</span>}
           </div>
         )}
@@ -1882,16 +2053,21 @@ export default function App() {
           {showStartCard && (
             <NewMapCard
               zoteroConnected={zoteroConnected}
+              mendeleyConnected={mendeleyConnected}
               zoteroCollections={zoteroCollections}
-              selectedCollectionKey={selectedCollectionKey}
-              onSelectCollection={selectCollection}
-              onCreateMap={() => createCollectionMap()}
+              mendeleyCollections={mendeleyCollections}
+              libraryProvider={libraryProvider}
+              onCreateMap={(provider, key) => createCollectionMap(key || "", undefined, provider)}
               onCreateFromPaper={createMapFromPaper}
               onConnectZotero={() => {
                 dismissStartCard();
                 setShowZoteroPanel(true);
               }}
-              busy={zoteroBusy}
+              onConnectMendeley={() => {
+                dismissStartCard();
+                connectMendeley();
+              }}
+              busy={zoteroBusy || mendeleyBusy}
               loading={!!loadingMsg}
               onDismiss={dismissStartCard}
             />
@@ -2715,11 +2891,11 @@ export default function App() {
 
               {selected.doi && zoteroDoisRef.current.has(selected.doi.toLowerCase()) ? (
                 <div style={{ ...btnStyle(), marginTop: 8, width: "100%", justifyContent: "center", background: "#1f3a30", borderColor: "#2f5a45", cursor: "default" }}>
-                  <Check size={14} /> Already in Zotero
+                  <Check size={14} /> Already in {libraryLabel(libraryProvider)}
                 </div>
               ) : (
-                <button onClick={() => addToZotero(selected)} style={{ ...btnStyle(), marginTop: 8, width: "100%", justifyContent: "center" }}>
-                  {addingId === selected.id ? <Loader2 size={14} className="spin" /> : (<><Plus size={14} /> Add to Zotero</>)}
+                <button onClick={() => addToLibrary(selected)} style={{ ...btnStyle(), marginTop: 8, width: "100%", justifyContent: "center" }}>
+                  {addingId === selected.id ? <Loader2 size={14} className="spin" /> : (<><Plus size={14} /> Add to {libraryLabel(libraryProvider)}</>)}
                 </button>
               )}
 
