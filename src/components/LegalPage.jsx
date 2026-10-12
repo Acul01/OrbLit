@@ -9,7 +9,7 @@ export default function LegalPage({ title, draftNotice, children }) {
     <div style={s.page}>
       <header style={s.nav}>
         <Link href="/" style={s.logoGroup}>
-          <OrbitIcon size={20} />
+          <OrbitIcon size={44} clipRight={0.8} />
           <span style={s.logo}>OrbLit</span>
         </Link>
       </header>
@@ -45,11 +45,12 @@ const s = {
   nav: {
     padding: "20px 32px",
     borderBottom: "1px solid #1E2A42",
+    background: "linear-gradient(90deg, #000 0 84px, #0B1220 210px)",
   },
   logoGroup: {
     display: "flex",
     alignItems: "center",
-    gap: 8,
+    gap: 2,
     textDecoration: "none",
     color: "#E8E6DE",
     width: "fit-content",

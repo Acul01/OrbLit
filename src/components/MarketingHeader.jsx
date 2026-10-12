@@ -13,7 +13,7 @@ export default function MarketingHeader() {
   return (
     <header style={s.nav}>
       <Link href="/" style={s.logoGroup}>
-        <OrbitIcon />
+        <OrbitIcon size={48} clipRight={0.8} />
         <span style={s.logo}>OrbLit</span>
       </Link>
       <div style={s.navRight}>
@@ -38,11 +38,12 @@ const s = {
     borderBottom: "1px solid #1E2A42",
     flexWrap: "wrap",
     gap: 12,
+    background: "linear-gradient(90deg, #000 0 88px, #0B1220 220px)",
   },
   logoGroup: {
     display: "flex",
     alignItems: "center",
-    gap: 8,
+    gap: 2,
     textDecoration: "none",
     color: "#E8E6DE",
   },
